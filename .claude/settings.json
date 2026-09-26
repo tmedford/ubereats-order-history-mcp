@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(echo *)",
+      "Bash(npm test*)",
+      "Bash(npm run typecheck)",
+      "Bash(npm run lint)",
+      "Bash(npm run build)",
+      "Bash(npm run check:leaks)",
+      "Bash(npx jest*)",
+      "Bash(npx tsc*)",
+      "Bash(npx eslint*)",
+      "Bash(npx prettier*)",
+      "Bash(node scripts/check-leaks.mjs)"
+    ],
+    "deny": [
+      "Bash(git push --force)",
+      "Bash(git push -f*)",
+      "Bash(rm -rf *)",
+      "Bash(git add captures*)",
+      "Read(./captures/**)"
+    ]
+  }
+}

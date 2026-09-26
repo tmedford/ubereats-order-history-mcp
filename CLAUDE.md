@@ -7,3 +7,4 @@
 - `captures/` holds real personal data and is gitignored. Never commit it and never paste it into issues.
 - Before a PR: `npm run typecheck && npm run lint && npm test`, and `npm run test:e2e` when touching the browser, auth or RPC layers.
 - Reviews: CodeRabbit is rate-limited. Batch all fixes for a review round into one push, then comment `@coderabbitai review` once. Pushes do not trigger re-reviews on their own. `main` merges need an approving review, which CodeRabbit gives once its comments are resolved (`request_changes_workflow`).
+- Code standards: read `.claude/rules/code-standards.md` before writing or reviewing code (rules CS-1…CS-11; every change leaves the codebase the same size or smaller for the same capability).

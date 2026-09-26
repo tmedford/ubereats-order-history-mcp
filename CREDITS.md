@@ -1,0 +1,4 @@
+# Credits
+
+- **Chrome cookie import** (`src/core/chrome-cookies.ts`), **shared-browser owner/attach election** (`src/core/shared-browser.ts`) and the **sign-in guard** (`src/core/auth-guard.ts`) are ported and generalised from [tmedford/amazon-order-history-csv-download-mcp](https://github.com/tmedford/amazon-order-history-csv-download-mcp), itself a fork of [marcusquinn/amazon-order-history-csv-download-mcp](https://github.com/marcusquinn/amazon-order-history-csv-download-mcp) by Marcus Quinn, MIT licensed. The cookie decryption was in turn ported from tmedford/linkedin-mcp-server.
+- Endpoint notes for `getPastOrdersV1` cross-checked against [aaymeloglu/ubereats-mcp](https://github.com/aaymeloglu/ubereats-mcp) (MIT) recon notes and [amansk/ubereats-pp-cli](https://github.com/amansk/ubereats-pp-cli) (Apache-2.0). No code was copied from either.

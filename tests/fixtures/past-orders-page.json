@@ -1,0 +1,1682 @@
+{
+  "ordersMap": {
+    "b37637a0-18d4-4316-a445-2e62415bb3fb": {
+      "baseEaterOrder": {
+        "uuid": "b37637a0-18d4-4316-a445-2e62415bb3fb",
+        "storeUuid": "a3ca4f37-d671-5302-bf15-012ccf64a16b",
+        "isCancelled": false,
+        "isCompleted": true,
+        "completedAt": "2026-09-22T00:04:38.000Z",
+        "lastStateChangeAt": "2026-09-22T00:04:38.000Z",
+        "orderStateChanges": [
+          {
+            "stateChangeTime": "2026-09-21T23:09:58.000Z",
+            "type": "CREATED",
+            "changingEntityUuid": null
+          },
+          {
+            "stateChangeTime": "2026-09-21T23:09:58.000Z",
+            "type": "OFFERED",
+            "changingEntityUuid": null
+          },
+          {
+            "stateChangeTime": "2026-09-21T23:36:53.000Z",
+            "type": "ASSIGNED",
+            "changingEntityUuid": null
+          },
+          {
+            "stateChangeTime": "2026-09-22T00:04:38.000Z",
+            "type": "COMPLETED",
+            "changingEntityUuid": "a3ca4f37-d671-5302-bf15-012ccf64a16b"
+          }
+        ],
+        "deliveryStateChanges": [
+          {
+            "stateChangeTime": "2026-09-21T23:10:34.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-09-21T23:10:41.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-09-21T23:11:00.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-09-21T23:11:07.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-09-21T23:13:43.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-09-21T23:14:43.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-09-21T23:14:59.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-09-21T23:15:18.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-09-21T23:15:40.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-09-21T23:15:55.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-09-21T23:16:02.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-09-21T23:16:18.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-09-21T23:16:24.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-09-21T23:16:39.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-09-21T23:19:02.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-09-21T23:19:13.000Z",
+            "type": "UNKNOWN"
+          },
+          {
+            "stateChangeTime": "2026-09-21T23:27:05.000Z",
+            "type": "PICKUP_ARRIVED"
+          },
+          {
+            "stateChangeTime": "2026-09-21T23:37:50.000Z",
+            "type": "BEGINTRIP"
+          },
+          {
+            "stateChangeTime": "2026-09-22T00:01:53.000Z",
+            "type": "PICKUP_ARRIVED"
+          },
+          {
+            "stateChangeTime": "2026-09-22T00:04:38.000Z",
+            "type": "COMPLETED"
+          }
+        ],
+        "shoppingCart": {
+          "cartUuid": "501965d2-4dc4-461d-a90d-9564c95cd240",
+          "items": [
+            {
+              "uuid": "d0cd425d-5ffc-5baa-a66a-8b407d3d2ead",
+              "storeUuid": "a3ca4f37-d671-5302-bf15-012ccf64a16b",
+              "shoppingCartItemUuid": "166dbc2b-b767-44ab-82f3-842eb73bcf99",
+              "sectionUuid": "dbef43fc-1be8-56eb-b667-795ea300e123",
+              "subsectionUuid": "dbef43fc-1be8-56eb-b667-795ea300e123",
+              "title": "Cascade Platinum Dishwasher Detergent Liquid, Fresh (75 fl oz)",
+              "price": 1439,
+              "quantity": 1,
+              "specialInstructions": "",
+              "customizations": [],
+              "cartItemCustomizations": {},
+              "consumerUuid": "00000000-0000-4000-8000-000000000001",
+              "rating": null,
+              "itemQuantity": {
+                "inSellableUnit": {
+                  "value": {
+                    "coefficient": 1,
+                    "exponent": 0
+                  },
+                  "measurementUnit": {
+                    "measurementType": "MEASUREMENT_TYPE_COUNT",
+                    "length": null,
+                    "weight": null,
+                    "volume": null
+                  },
+                  "measurementUnitAbbreviationText": null
+                },
+                "inPriceableUnit": null
+              }
+            },
+            {
+              "uuid": "a61a53b0-7df1-588a-8054-7beca390af19",
+              "storeUuid": "a3ca4f37-d671-5302-bf15-012ccf64a16b",
+              "shoppingCartItemUuid": "84b735c8-97ce-40da-852f-ac521e3eca84",
+              "sectionUuid": "ddc65789-b25e-5786-b700-52d92d91de31",
+              "subsectionUuid": "eeedacb3-daef-5297-88e9-28ac43cd022c",
+              "title": "Dealworthy Hdmi High Speed Cable With Ethernet Cable, 6 ft, Black",
+              "price": 1079,
+              "quantity": 1,
+              "specialInstructions": "",
+              "customizations": [],
+              "cartItemCustomizations": {},
+              "consumerUuid": "00000000-0000-4000-8000-000000000001",
+              "rating": null,
+              "itemQuantity": {
+                "inSellableUnit": {
+                  "value": {
+                    "coefficient": 1,
+                    "exponent": 0
+                  },
+                  "measurementUnit": {
+                    "measurementType": "MEASUREMENT_TYPE_COUNT",
+                    "length": null,
+                    "weight": null,
+                    "volume": null
+                  },
+                  "measurementUnitAbbreviationText": null
+                },
+                "inPriceableUnit": null
+              }
+            }
+          ],
+          "currencyCode": "USD"
+        },
+        "currencyCode": "USD",
+        "isScheduledOrder": false,
+        "numItems": 2,
+        "totalQuantity": 2,
+        "fulfillmentType": "DELIVERY_OVER_THE_TOP",
+        "posType": "UNDEFINED",
+        "orderAppVariant": "UBEREATS",
+        "isBackfilledOrder": false,
+        "displayName": "",
+        "billSplitOption": "UNKNOWN_BILL_SPLIT_OPTION",
+        "isOrderCreator": true,
+        "creatorDisplayName": "Alex",
+        "orderCategory": "GROCERY"
+      },
+      "storeInfo": {
+        "uuid": "a3ca4f37-d671-5302-bf15-012ccf64a16b",
+        "heroImageUrl": "https://tb-static.uber.com/prod/image-proc/processed_images/70c88cdb6b5fb8560e3091a5022f27f6/c67d558c633281f9c71fc6a90ef470ae.jpeg",
+        "title": "Target",
+        "isOpen": false,
+        "closedMessage": "Opens on Saturday",
+        "location": {
+          "address": {
+            "address1": "512 2nd Ave",
+            "aptOrSuite": null,
+            "city": "New York",
+            "country": "US",
+            "postalCode": "10016",
+            "region": "NY",
+            "title": null,
+            "uuid": "dbf9007d-11d7-4905-b00e-554957d3d4d6",
+            "eaterFormattedAddress": "512 2nd Ave, New York, NY 10016",
+            "subtitle": null,
+            "businessName": null,
+            "street": null,
+            "ugcAddressFieldInfo": null
+          },
+          "latitude": 40.7414793,
+          "longitude": -73.9780353,
+          "reference": null,
+          "type": null,
+          "placeReferences": null,
+          "interactionType": null,
+          "nickname": null
+        },
+        "storeStatus": {
+          "isActive": true,
+          "notActiveReason": "UNKNOWN"
+        },
+        "contact": {
+          "phoneNumber": "+16468224567"
+        },
+        "territoryUUID": "7c8239ee-388f-4a41-9b07-79115ea1323a",
+        "rating": null,
+        "slug": "target-kips-bay"
+      },
+      "courierInfo": {
+        "name": ""
+      },
+      "fareInfo": {
+        "totalPrice": 3654.9999999999995,
+        "checkoutInfo": [
+          {
+            "label": "delivery.uber.service_fee",
+            "type": "credit",
+            "rawValue": 0.1,
+            "key": "delivery.uber.service_fee",
+            "formattedValue": "$0.10"
+          },
+          {
+            "label": "Tax on Delivery Fees",
+            "type": "credit",
+            "rawValue": 0.73,
+            "key": "eats.mp.charges.bundled_delivery_fee_taxes",
+            "formattedValue": "$0.73"
+          },
+          {
+            "label": "Subtotal",
+            "type": "credit",
+            "rawValue": 25.18,
+            "key": "eats_fare.subtotal",
+            "formattedValue": "$25.18"
+          },
+          {
+            "label": "Tax",
+            "type": "credit",
+            "rawValue": 2.25,
+            "key": "eats.tax.base",
+            "formattedValue": "$2.25"
+          },
+          {
+            "label": "Delivery Fee",
+            "type": "credit",
+            "rawValue": 0.99,
+            "key": "eats.mp.charges.booking_fee",
+            "formattedValue": "$0.99"
+          },
+          {
+            "label": "Service Fee and Other Fees",
+            "type": "credit",
+            "rawValue": 7.3,
+            "key": "eats.mp.charges.basket_dependent_fee",
+            "formattedValue": "$7.30"
+          },
+          {
+            "label": "Total",
+            "type": "credit",
+            "rawValue": 36.55,
+            "key": "eats_fare.total",
+            "formattedValue": "$36.55"
+          }
+        ]
+      },
+      "ratingInfo": {
+        "isRatable": true,
+        "userRatings": []
+      },
+      "interactionType": "leave_at_door",
+      "deliveryAddress": null,
+      "customerInfos": {
+        "00000000-0000-4000-8000-000000000001": {
+          "uuid": "00000000-0000-4000-8000-000000000001",
+          "firstName": "Alex",
+          "lastName": "Alex",
+          "nickName": "alex@example.com",
+          "phone": "+15555550100",
+          "email": null
+        }
+      }
+    },
+    "858be403-b732-473f-9a67-88c0e50e1e7a": {
+      "baseEaterOrder": {
+        "uuid": "858be403-b732-473f-9a67-88c0e50e1e7a",
+        "storeUuid": "60af5460-86f1-4ddd-866a-9a69d8de2981",
+        "isCancelled": false,
+        "isCompleted": true,
+        "completedAt": "2026-08-09T16:35:04.737Z",
+        "lastStateChangeAt": "2026-08-09T16:35:04.737Z",
+        "orderStateChanges": [
+          {
+            "stateChangeTime": "2026-08-09T16:16:20.422Z",
+            "type": "CREATED",
+            "changingEntityUuid": null
+          },
+          {
+            "stateChangeTime": "2026-08-09T16:16:21.509Z",
+            "type": "OFFERED",
+            "changingEntityUuid": null
+          },
+          {
+            "stateChangeTime": "2026-08-09T16:16:22.928Z",
+            "type": "ASSIGNED",
+            "changingEntityUuid": null
+          },
+          {
+            "stateChangeTime": "2026-08-09T16:25:03.196Z",
+            "type": "READY",
+            "changingEntityUuid": null
+          },
+          {
+            "stateChangeTime": "2026-08-09T16:35:04.737Z",
+            "type": "COMPLETED",
+            "changingEntityUuid": "60af5460-86f1-4ddd-866a-9a69d8de2981"
+          }
+        ],
+        "deliveryStateChanges": [
+          {
+            "stateChangeTime": "2026-08-09T16:21:16.000Z",
+            "type": "UNKNOWN"
+          },
+          {
+            "stateChangeTime": "2026-08-09T16:24:27.000Z",
+            "type": "PICKUP_ARRIVED"
+          },
+          {
+            "stateChangeTime": "2026-08-09T16:29:30.000Z",
+            "type": "BEGINTRIP"
+          },
+          {
+            "stateChangeTime": "2026-08-09T16:31:03.000Z",
+            "type": "PICKUP_ARRIVED"
+          },
+          {
+            "stateChangeTime": "2026-08-09T16:35:04.000Z",
+            "type": "COMPLETED"
+          }
+        ],
+        "shoppingCart": {
+          "cartUuid": "a384fe20-6b37-479e-8c76-2d9cc01f5889",
+          "items": [
+            {
+              "uuid": "1ca35ec5-746a-50b1-9698-bb3127781b45",
+              "storeUuid": "60af5460-86f1-4ddd-866a-9a69d8de2981",
+              "shoppingCartItemUuid": "a8314146-c5e5-4dcd-a1e2-e1092a111378",
+              "sectionUuid": "64c70138-1f5c-58d6-8112-d26dceeba332",
+              "subsectionUuid": "a5048f61-00f5-5d9d-99f1-3def35f99cca",
+              "title": "Scallion Tofu Spread Sandwich",
+              "price": 681,
+              "quantity": 1,
+              "specialInstructions": "",
+              "customizations": [
+                {
+                  "uuid": "2e421e54-ad1b-59e2-9ff2-b2218173be39",
+                  "title": "Bread Choice",
+                  "childOptions": {
+                    "options": [
+                      {
+                        "price": 0,
+                        "quantity": 1,
+                        "title": "Everything Bagel",
+                        "uuid": "d580617e-e044-5668-bf53-6cc02927f823",
+                        "childCustomizationList": []
+                      }
+                    ]
+                  },
+                  "groupId": 0
+                },
+                {
+                  "uuid": "832b2152-0190-5b16-bf5c-aab9832be183",
+                  "title": "Bread Preparation",
+                  "childOptions": {
+                    "options": [
+                      {
+                        "price": 0,
+                        "quantity": 1,
+                        "title": "Toasted",
+                        "uuid": "e31d7536-4d70-571a-a406-35aa0e649bf1",
+                        "childCustomizationList": []
+                      },
+                      {
+                        "price": 0,
+                        "quantity": 1,
+                        "title": "Scooped Out",
+                        "uuid": "c65fc38d-6817-5004-8268-970c5d77d072",
+                        "childCustomizationList": []
+                      }
+                    ]
+                  },
+                  "groupId": 1
+                }
+              ],
+              "cartItemCustomizations": {
+                "2e421e54-ad1b-59e2-9ff2-b2218173be39+0": [
+                  {
+                    "uuid": "d580617e-e044-5668-bf53-6cc02927f823",
+                    "price": 0,
+                    "quantity": 1,
+                    "title": "Everything Bagel",
+                    "defaultQuantity": 0,
+                    "customizationMeta": {
+                      "title": "Bread Choice",
+                      "isPickOne": false
+                    }
+                  }
+                ],
+                "832b2152-0190-5b16-bf5c-aab9832be183+1": [
+                  {
+                    "uuid": "e31d7536-4d70-571a-a406-35aa0e649bf1",
+                    "price": 0,
+                    "quantity": 1,
+                    "title": "Toasted",
+                    "defaultQuantity": 0,
+                    "customizationMeta": {
+                      "title": "Bread Preparation",
+                      "isPickOne": false
+                    }
+                  },
+                  {
+                    "uuid": "c65fc38d-6817-5004-8268-970c5d77d072",
+                    "price": 0,
+                    "quantity": 1,
+                    "title": "Scooped Out",
+                    "defaultQuantity": 0,
+                    "customizationMeta": {
+                      "title": "Bread Preparation",
+                      "isPickOne": false
+                    }
+                  }
+                ]
+              },
+              "consumerUuid": "00000000-0000-4000-8000-000000000001",
+              "rating": null,
+              "itemQuantity": {
+                "inSellableUnit": {
+                  "value": {
+                    "coefficient": 1,
+                    "exponent": 0
+                  },
+                  "measurementUnit": {
+                    "measurementType": "MEASUREMENT_TYPE_COUNT",
+                    "length": null,
+                    "weight": null,
+                    "volume": null
+                  },
+                  "measurementUnitAbbreviationText": null
+                },
+                "inPriceableUnit": null
+              }
+            },
+            {
+              "uuid": "263dda12-f415-5cba-a215-e9af9b4a2008",
+              "storeUuid": "60af5460-86f1-4ddd-866a-9a69d8de2981",
+              "shoppingCartItemUuid": "449419b1-c6ad-433c-9dbe-ef9b415812c4",
+              "sectionUuid": "64c70138-1f5c-58d6-8112-d26dceeba332",
+              "subsectionUuid": "132c7c12-16a1-504b-8a56-c9ac6102420f",
+              "title": "Two Eggs on a Bagel",
+              "price": 688,
+              "quantity": 2,
+              "specialInstructions": "",
+              "customizations": [
+                {
+                  "uuid": "13672a67-6960-5da1-b997-ff365d79cc46",
+                  "title": "Bread Choice",
+                  "childOptions": {
+                    "options": [
+                      {
+                        "price": 0,
+                        "quantity": 1,
+                        "title": "Sesame Sourdough Bagel",
+                        "uuid": "538dd946-7114-5870-aa87-5474695e8e78",
+                        "childCustomizationList": []
+                      }
+                    ]
+                  },
+                  "groupId": 0
+                },
+                {
+                  "uuid": "6d12a718-ed20-5ae5-952f-fe3b53546d04",
+                  "title": "Extra BF Cheese",
+                  "childOptions": {
+                    "options": [
+                      {
+                        "price": 150,
+                        "quantity": 1,
+                        "title": "Pepper Jack Cheese.",
+                        "uuid": "99ef1e58-8047-51e7-8ab2-369aa3b1ceed",
+                        "childCustomizationList": []
+                      }
+                    ]
+                  },
+                  "groupId": 1
+                }
+              ],
+              "cartItemCustomizations": {
+                "13672a67-6960-5da1-b997-ff365d79cc46+0": [
+                  {
+                    "uuid": "538dd946-7114-5870-aa87-5474695e8e78",
+                    "price": 0,
+                    "quantity": 1,
+                    "title": "Sesame Sourdough Bagel",
+                    "defaultQuantity": 0,
+                    "customizationMeta": {
+                      "title": "Bread Choice",
+                      "isPickOne": false
+                    }
+                  }
+                ],
+                "6d12a718-ed20-5ae5-952f-fe3b53546d04+1": [
+                  {
+                    "uuid": "99ef1e58-8047-51e7-8ab2-369aa3b1ceed",
+                    "price": 150,
+                    "quantity": 1,
+                    "title": "Pepper Jack Cheese.",
+                    "defaultQuantity": 0,
+                    "customizationMeta": {
+                      "title": "Extra BF Cheese",
+                      "isPickOne": false
+                    }
+                  }
+                ]
+              },
+              "consumerUuid": "00000000-0000-4000-8000-000000000001",
+              "rating": null,
+              "itemQuantity": {
+                "inSellableUnit": {
+                  "value": {
+                    "coefficient": 2,
+                    "exponent": 0
+                  },
+                  "measurementUnit": {
+                    "measurementType": "MEASUREMENT_TYPE_COUNT",
+                    "length": null,
+                    "weight": null,
+                    "volume": null
+                  },
+                  "measurementUnitAbbreviationText": null
+                },
+                "inPriceableUnit": null
+              }
+            }
+          ],
+          "currencyCode": "USD"
+        },
+        "currencyCode": "USD",
+        "isScheduledOrder": false,
+        "numItems": 2,
+        "totalQuantity": 3,
+        "fulfillmentType": "DELIVERY",
+        "posType": "UNDEFINED",
+        "orderAppVariant": "UBEREATS",
+        "isBackfilledOrder": false,
+        "displayName": "",
+        "billSplitOption": "UNKNOWN_BILL_SPLIT_OPTION",
+        "isOrderCreator": true,
+        "creatorDisplayName": "Alex",
+        "orderCategory": "DEFAULT"
+      },
+      "storeInfo": {
+        "uuid": "60af5460-86f1-4ddd-866a-9a69d8de2981",
+        "heroImageUrl": "https://tb-static.uber.com/prod/image-proc/processed_images/87dcb08268139cf7fd3a21807ebcb483/d69908760640e6133b4375321dd259b9.jpeg",
+        "title": "Zucker's Bagels",
+        "isOpen": false,
+        "closedMessage": "Closed",
+        "location": {
+          "address": {
+            "address1": "125 Fulton Street",
+            "aptOrSuite": null,
+            "city": "New York",
+            "country": "US",
+            "postalCode": "10038",
+            "region": "NY",
+            "title": null,
+            "uuid": "fc9ebc12-54c1-4899-baee-baecde895223",
+            "eaterFormattedAddress": "125 Fulton Street, New York, NY 10038",
+            "subtitle": null,
+            "businessName": null,
+            "street": null,
+            "ugcAddressFieldInfo": null
+          },
+          "latitude": 40.7101533,
+          "longitude": -74.0072574,
+          "reference": null,
+          "type": null,
+          "placeReferences": null,
+          "interactionType": null,
+          "nickname": null
+        },
+        "storeStatus": {
+          "isActive": true,
+          "notActiveReason": "UNKNOWN"
+        },
+        "contact": {
+          "phoneNumber": "+12123619400"
+        },
+        "territoryUUID": "7c8239ee-388f-4a41-9b07-79115ea1323a",
+        "rating": null,
+        "slug": "zuckers-bagels-fidi"
+      },
+      "courierInfo": {
+        "name": ""
+      },
+      "fareInfo": {
+        "totalPrice": 2461,
+        "checkoutInfo": [
+          {
+            "label": "delivery.uber.service_fee",
+            "type": "credit",
+            "rawValue": 0.1,
+            "key": "delivery.uber.service_fee",
+            "formattedValue": "$0.10"
+          },
+          {
+            "label": "Special Offer",
+            "type": "debit",
+            "rawValue": -6.88,
+            "key": "eats.item_discount.promotion_total",
+            "formattedValue": "($6.88)"
+          },
+          {
+            "label": "Subtotal",
+            "type": "credit",
+            "rawValue": 23.57,
+            "key": "eats_fare.subtotal",
+            "formattedValue": "$23.57"
+          },
+          {
+            "label": "Uber One Credits",
+            "type": "debit",
+            "rawValue": -1.35,
+            "key": "eats.mp.discounts.membership.cash_benefit",
+            "formattedValue": "($1.35)"
+          },
+          {
+            "label": "Tax",
+            "type": "credit",
+            "rawValue": 1.48,
+            "key": "eats.tax.base",
+            "formattedValue": "$1.48"
+          },
+          {
+            "label": "Membership Benefit",
+            "type": "debit",
+            "rawValue": -1.89,
+            "key": "eats.mp.discounts.subscription_basket_dependent_discount",
+            "formattedValue": "($1.89)"
+          },
+          {
+            "label": "Delivery Fee",
+            "type": "credit",
+            "rawValue": 6.99,
+            "key": "eats.mp.charges.booking_fee",
+            "formattedValue": "$6.99"
+          },
+          {
+            "label": "Delivery Discount",
+            "type": "debit",
+            "rawValue": -6.99,
+            "key": "eats.mp.discounts.subscription_delivery_fee_discount",
+            "formattedValue": "($6.99)"
+          },
+          {
+            "label": "Service Fee and Other Fees",
+            "type": "credit",
+            "rawValue": 5.79,
+            "key": "eats.mp.charges.basket_dependent_fee",
+            "formattedValue": "$5.79"
+          },
+          {
+            "label": "Tip",
+            "type": "credit",
+            "rawValue": 3.79,
+            "key": "eats_fare.tip",
+            "formattedValue": "$3.79"
+          },
+          {
+            "label": "Total",
+            "type": "credit",
+            "rawValue": 24.61,
+            "key": "eats_fare.total",
+            "formattedValue": "$24.61"
+          }
+        ]
+      },
+      "ratingInfo": {
+        "isRatable": false,
+        "userRatings": []
+      },
+      "interactionType": "door_to_door",
+      "deliveryAddress": null,
+      "customerInfos": {
+        "00000000-0000-4000-8000-000000000001": {
+          "uuid": "00000000-0000-4000-8000-000000000001",
+          "firstName": "Alex",
+          "lastName": "Alex",
+          "nickName": "alex@example.com",
+          "phone": "+15555550100",
+          "email": null
+        }
+      }
+    },
+    "886c8f6e-4714-43bb-b0e7-eed8eebc7045": {
+      "baseEaterOrder": {
+        "uuid": "886c8f6e-4714-43bb-b0e7-eed8eebc7045",
+        "storeUuid": "e904ea6c-5279-4d6b-bc63-8803ccf32a95",
+        "isCancelled": false,
+        "isCompleted": true,
+        "completedAt": "2026-04-17T02:55:31.544Z",
+        "lastStateChangeAt": "2026-04-17T02:55:31.544Z",
+        "orderStateChanges": [
+          {
+            "stateChangeTime": "2026-04-17T02:32:23.903Z",
+            "type": "CREATED",
+            "changingEntityUuid": null
+          },
+          {
+            "stateChangeTime": "2026-04-17T02:32:27.005Z",
+            "type": "OFFERED",
+            "changingEntityUuid": null
+          },
+          {
+            "stateChangeTime": "2026-04-17T02:32:37.700Z",
+            "type": "ASSIGNED",
+            "changingEntityUuid": null
+          },
+          {
+            "stateChangeTime": "2026-04-17T02:55:31.544Z",
+            "type": "COMPLETED",
+            "changingEntityUuid": "e904ea6c-5279-4d6b-bc63-8803ccf32a95"
+          }
+        ],
+        "deliveryStateChanges": [
+          {
+            "stateChangeTime": "2026-04-17T02:35:32.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-04-17T02:35:37.000Z",
+            "type": "UNKNOWN"
+          },
+          {
+            "stateChangeTime": "2026-04-17T02:41:53.000Z",
+            "type": "PICKUP_ARRIVED"
+          },
+          {
+            "stateChangeTime": "2026-04-17T02:43:21.000Z",
+            "type": "BEGINTRIP"
+          },
+          {
+            "stateChangeTime": "2026-04-17T02:50:57.000Z",
+            "type": "PICKUP_ARRIVED"
+          },
+          {
+            "stateChangeTime": "2026-04-17T02:55:31.000Z",
+            "type": "COMPLETED"
+          }
+        ],
+        "shoppingCart": {
+          "cartUuid": "792809cf-bb0e-44be-8bf9-9120358bec73",
+          "items": [
+            {
+              "uuid": "5942f544-227c-52dc-8716-5cd92252dc1b",
+              "storeUuid": "e904ea6c-5279-4d6b-bc63-8803ccf32a95",
+              "shoppingCartItemUuid": "f3f6443a-430c-488f-a76b-d805cebe581b",
+              "sectionUuid": "68bf01d3-dda5-593e-9853-6d94a5f08ee8",
+              "subsectionUuid": "ef61ebbf-01b9-5c3d-a110-b6398061deac",
+              "title": "Hamburger Happy Meal®",
+              "price": 799,
+              "quantity": 2,
+              "specialInstructions": "",
+              "customizations": [
+                {
+                  "uuid": "ab8f3c92-05ed-50a9-a190-be2a9e2dd118",
+                  "title": "Choose your second side",
+                  "childOptions": {
+                    "options": [
+                      {
+                        "price": 0,
+                        "quantity": 1,
+                        "title": "Apple Slices",
+                        "uuid": "4f1e07b7-ea25-5759-a1f6-622236c86e1b",
+                        "childCustomizationList": []
+                      }
+                    ]
+                  },
+                  "groupId": 0
+                },
+                {
+                  "uuid": "664b929d-c1ed-55da-b2aa-52d07de49e4f",
+                  "title": "Select Toy",
+                  "childOptions": {
+                    "options": [
+                      {
+                        "price": 0,
+                        "quantity": 1,
+                        "title": "Super Mario Galaxy Movie Toy",
+                        "uuid": "0d1bb4fe-17e1-58a2-8dea-8763a78d6d74",
+                        "childCustomizationList": []
+                      }
+                    ]
+                  },
+                  "groupId": 1
+                },
+                {
+                  "uuid": "c64c5970-3e3c-5d78-b8ee-5ffefafcb6ce",
+                  "title": "Choose your drink",
+                  "childOptions": {
+                    "options": [
+                      {
+                        "price": 10,
+                        "quantity": 1,
+                        "title": "Milk",
+                        "uuid": "76dc9c84-e84c-554d-bb55-65309e08ab7c",
+                        "childCustomizationList": []
+                      }
+                    ]
+                  },
+                  "groupId": 2
+                },
+                {
+                  "uuid": "0908f28a-befa-5919-aeb7-762b72912cd0",
+                  "title": "Hamburger HM Comes With",
+                  "childOptions": {
+                    "options": [
+                      {
+                        "price": 0,
+                        "quantity": 1,
+                        "title": "Mustard",
+                        "uuid": "c30eefeb-1303-528e-ba55-09315fee32f9",
+                        "childCustomizationList": []
+                      },
+                      {
+                        "price": 0,
+                        "quantity": 1,
+                        "title": "Ketchup",
+                        "uuid": "de351ac3-3fc9-5cb3-8261-858ce5a2c26f",
+                        "childCustomizationList": []
+                      },
+                      {
+                        "price": 0,
+                        "quantity": 1,
+                        "title": "Diced Onions",
+                        "uuid": "34b4b43f-e873-5145-b21f-b851bbd2d310",
+                        "childCustomizationList": []
+                      },
+                      {
+                        "price": 0,
+                        "quantity": 0,
+                        "title": "Pickle",
+                        "uuid": "363167c7-7aaf-5b83-aaf1-c73ff703d189",
+                        "childCustomizationList": []
+                      },
+                      {
+                        "price": 119,
+                        "quantity": 1,
+                        "title": "1/10 Lb Beef",
+                        "uuid": "a7c122c9-ecf6-5b41-b90b-37f5cc6d7deb",
+                        "childCustomizationList": []
+                      },
+                      {
+                        "price": 0,
+                        "quantity": 1,
+                        "title": "Regular Bun",
+                        "uuid": "461e142b-d47a-526e-8efe-b65eb7f7aa97",
+                        "childCustomizationList": []
+                      },
+                      {
+                        "price": 0,
+                        "quantity": 1,
+                        "title": "Salt",
+                        "uuid": "287bcb76-8acb-5cbf-8a6f-2ddbd581b24e",
+                        "childCustomizationList": []
+                      }
+                    ]
+                  },
+                  "groupId": 3
+                },
+                {
+                  "uuid": "9fd649b2-0930-530f-88d3-df7cc4809138",
+                  "title": "Kids Fry Comes With",
+                  "childOptions": {
+                    "options": [
+                      {
+                        "price": 0,
+                        "quantity": 1,
+                        "title": "Salt",
+                        "uuid": "287bcb76-8acb-5cbf-8a6f-2ddbd581b24e",
+                        "childCustomizationList": []
+                      }
+                    ]
+                  },
+                  "groupId": 4
+                }
+              ],
+              "cartItemCustomizations": {
+                "ab8f3c92-05ed-50a9-a190-be2a9e2dd118+0": [
+                  {
+                    "uuid": "4f1e07b7-ea25-5759-a1f6-622236c86e1b",
+                    "price": 0,
+                    "quantity": 1,
+                    "title": "Apple Slices",
+                    "defaultQuantity": 0,
+                    "customizationMeta": {
+                      "title": "Choose your second side",
+                      "isPickOne": false
+                    }
+                  }
+                ],
+                "664b929d-c1ed-55da-b2aa-52d07de49e4f+1": [
+                  {
+                    "uuid": "0d1bb4fe-17e1-58a2-8dea-8763a78d6d74",
+                    "price": 0,
+                    "quantity": 1,
+                    "title": "Super Mario Galaxy Movie Toy",
+                    "defaultQuantity": 0,
+                    "customizationMeta": {
+                      "title": "Select Toy",
+                      "isPickOne": false
+                    }
+                  }
+                ],
+                "c64c5970-3e3c-5d78-b8ee-5ffefafcb6ce+2": [
+                  {
+                    "uuid": "76dc9c84-e84c-554d-bb55-65309e08ab7c",
+                    "price": 10,
+                    "quantity": 1,
+                    "title": "Milk",
+                    "defaultQuantity": 0,
+                    "customizationMeta": {
+                      "title": "Choose your drink",
+                      "isPickOne": false
+                    }
+                  }
+                ],
+                "0908f28a-befa-5919-aeb7-762b72912cd0+3": [
+                  {
+                    "uuid": "c30eefeb-1303-528e-ba55-09315fee32f9",
+                    "price": 0,
+                    "quantity": 1,
+                    "title": "Mustard",
+                    "defaultQuantity": 0,
+                    "customizationMeta": {
+                      "title": "Hamburger HM Comes With",
+                      "isPickOne": false
+                    }
+                  },
+                  {
+                    "uuid": "de351ac3-3fc9-5cb3-8261-858ce5a2c26f",
+                    "price": 0,
+                    "quantity": 1,
+                    "title": "Ketchup",
+                    "defaultQuantity": 0,
+                    "customizationMeta": {
+                      "title": "Hamburger HM Comes With",
+                      "isPickOne": false
+                    }
+                  },
+                  {
+                    "uuid": "34b4b43f-e873-5145-b21f-b851bbd2d310",
+                    "price": 0,
+                    "quantity": 1,
+                    "title": "Diced Onions",
+                    "defaultQuantity": 0,
+                    "customizationMeta": {
+                      "title": "Hamburger HM Comes With",
+                      "isPickOne": false
+                    }
+                  },
+                  {
+                    "uuid": "363167c7-7aaf-5b83-aaf1-c73ff703d189",
+                    "price": 0,
+                    "quantity": 0,
+                    "title": "Pickle",
+                    "defaultQuantity": 0,
+                    "customizationMeta": {
+                      "title": "Hamburger HM Comes With",
+                      "isPickOne": false
+                    }
+                  },
+                  {
+                    "uuid": "a7c122c9-ecf6-5b41-b90b-37f5cc6d7deb",
+                    "price": 119,
+                    "quantity": 1,
+                    "title": "1/10 Lb Beef",
+                    "defaultQuantity": 0,
+                    "customizationMeta": {
+                      "title": "Hamburger HM Comes With",
+                      "isPickOne": false
+                    }
+                  },
+                  {
+                    "uuid": "461e142b-d47a-526e-8efe-b65eb7f7aa97",
+                    "price": 0,
+                    "quantity": 1,
+                    "title": "Regular Bun",
+                    "defaultQuantity": 0,
+                    "customizationMeta": {
+                      "title": "Hamburger HM Comes With",
+                      "isPickOne": false
+                    }
+                  },
+                  {
+                    "uuid": "287bcb76-8acb-5cbf-8a6f-2ddbd581b24e",
+                    "price": 0,
+                    "quantity": 1,
+                    "title": "Salt",
+                    "defaultQuantity": 0,
+                    "customizationMeta": {
+                      "title": "Hamburger HM Comes With",
+                      "isPickOne": false
+                    }
+                  }
+                ],
+                "9fd649b2-0930-530f-88d3-df7cc4809138+4": [
+                  {
+                    "uuid": "287bcb76-8acb-5cbf-8a6f-2ddbd581b24e",
+                    "price": 0,
+                    "quantity": 1,
+                    "title": "Salt",
+                    "defaultQuantity": 0,
+                    "customizationMeta": {
+                      "title": "Kids Fry Comes With",
+                      "isPickOne": false
+                    }
+                  }
+                ]
+              },
+              "consumerUuid": "00000000-0000-4000-8000-000000000001",
+              "rating": null,
+              "itemQuantity": {
+                "inSellableUnit": {
+                  "value": {
+                    "coefficient": 2,
+                    "exponent": 0
+                  },
+                  "measurementUnit": {
+                    "measurementType": "MEASUREMENT_TYPE_COUNT",
+                    "length": null,
+                    "weight": null,
+                    "volume": null
+                  },
+                  "measurementUnitAbbreviationText": null
+                },
+                "inPriceableUnit": null
+              }
+            },
+            {
+              "uuid": "f6b3c07d-7f5b-5b48-9fc2-2799f4d2c696",
+              "storeUuid": "e904ea6c-5279-4d6b-bc63-8803ccf32a95",
+              "shoppingCartItemUuid": "e4f3ecfe-5938-411d-8bb0-edb92609d70a",
+              "sectionUuid": "68bf01d3-dda5-593e-9853-6d94a5f08ee8",
+              "subsectionUuid": "f672a65f-4268-53e9-9cde-7c7e149881fd",
+              "title": "10 pc. Chicken McNuggets®",
+              "price": 749,
+              "quantity": 1,
+              "specialInstructions": "",
+              "customizations": [
+                {
+                  "uuid": "f970effa-09f3-5661-8c63-ab6108c349cb",
+                  "title": "Select Sauce",
+                  "childOptions": {
+                    "options": [
+                      {
+                        "price": 0,
+                        "quantity": 2,
+                        "title": "Honey Packet",
+                        "uuid": "0df980ab-2953-5e56-aa84-4345ea28286f",
+                        "childCustomizationList": []
+                      }
+                    ]
+                  },
+                  "groupId": 0
+                }
+              ],
+              "cartItemCustomizations": {
+                "f970effa-09f3-5661-8c63-ab6108c349cb+0": [
+                  {
+                    "uuid": "0df980ab-2953-5e56-aa84-4345ea28286f",
+                    "price": 0,
+                    "quantity": 2,
+                    "title": "Honey Packet",
+                    "defaultQuantity": 0,
+                    "customizationMeta": {
+                      "title": "Select Sauce",
+                      "isPickOne": false
+                    }
+                  }
+                ]
+              },
+              "consumerUuid": "00000000-0000-4000-8000-000000000001",
+              "rating": null,
+              "itemQuantity": {
+                "inSellableUnit": {
+                  "value": {
+                    "coefficient": 1,
+                    "exponent": 0
+                  },
+                  "measurementUnit": {
+                    "measurementType": "MEASUREMENT_TYPE_COUNT",
+                    "length": null,
+                    "weight": null,
+                    "volume": null
+                  },
+                  "measurementUnitAbbreviationText": null
+                },
+                "inPriceableUnit": null
+              }
+            }
+          ],
+          "currencyCode": "USD"
+        },
+        "currencyCode": "USD",
+        "isScheduledOrder": false,
+        "numItems": 2,
+        "totalQuantity": 3,
+        "fulfillmentType": "DELIVERY",
+        "posType": "UNDEFINED",
+        "orderAppVariant": "UBEREATS",
+        "isBackfilledOrder": false,
+        "displayName": "",
+        "billSplitOption": "UNKNOWN_BILL_SPLIT_OPTION",
+        "isOrderCreator": true,
+        "creatorDisplayName": "Alex",
+        "orderCategory": "DEFAULT"
+      },
+      "storeInfo": {
+        "uuid": "e904ea6c-5279-4d6b-bc63-8803ccf32a95",
+        "heroImageUrl": "https://tb-static.uber.com/prod/image-proc/processed_images/b9c717751beec2896357ee0fbf38ad72/d69908760640e6133b4375321dd259b9.jpeg",
+        "title": "McDonald's®",
+        "isOpen": false,
+        "closedMessage": "Closed",
+        "location": {
+          "address": {
+            "address1": "3895 STEVENS CREEK BLVD",
+            "aptOrSuite": "",
+            "city": "SANTA CLARA",
+            "country": "US",
+            "postalCode": "95051-7336",
+            "region": "CA",
+            "title": null,
+            "uuid": "3417b3ee-77c7-4eb2-a981-b6bb753494d9",
+            "eaterFormattedAddress": "3895 STEVENS CREEK BLVD, SANTA CLARA, CA 95051-7336",
+            "subtitle": null,
+            "businessName": null,
+            "street": null,
+            "ugcAddressFieldInfo": null
+          },
+          "latitude": 37.3236067,
+          "longitude": -121.9689755,
+          "reference": null,
+          "type": null,
+          "placeReferences": null,
+          "interactionType": null,
+          "nickname": null
+        },
+        "storeStatus": {
+          "isActive": true,
+          "notActiveReason": "UNKNOWN"
+        },
+        "contact": {
+          "phoneNumber": "+14155313198"
+        },
+        "territoryUUID": "fe3a2a09-f4d9-49ac-96e8-7517a3434703",
+        "rating": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "slug": "mcdonalds-3895-stevens-creek"
+      },
+      "courierInfo": {
+        "name": ""
+      },
+      "fareInfo": {
+        "totalPrice": 2675,
+        "checkoutInfo": [
+          {
+            "label": "delivery.uber.service_fee",
+            "type": "credit",
+            "rawValue": 0.1,
+            "key": "delivery.uber.service_fee",
+            "formattedValue": "$0.10"
+          },
+          {
+            "label": "delivery.uber.service_fee.tax",
+            "type": "credit",
+            "rawValue": 0.02,
+            "key": "delivery.uber.service_fee.tax",
+            "formattedValue": "$0.02"
+          },
+          {
+            "label": "Special Offer",
+            "type": "debit",
+            "rawValue": -7.49,
+            "key": "eats.item_discount.promotion_total",
+            "formattedValue": "($7.49)"
+          },
+          {
+            "label": "Subtotal",
+            "type": "credit",
+            "rawValue": 23.67,
+            "key": "eats_fare.subtotal",
+            "formattedValue": "$23.67"
+          },
+          {
+            "label": "Uber One Credits",
+            "type": "debit",
+            "rawValue": -0.61,
+            "key": "eats.mp.discounts.membership.cash_benefit",
+            "formattedValue": "($0.61)"
+          },
+          {
+            "label": "Tax",
+            "type": "credit",
+            "rawValue": 1.61,
+            "key": "eats.tax.base",
+            "formattedValue": "$1.61"
+          },
+          {
+            "label": "Membership Benefit",
+            "type": "debit",
+            "rawValue": -2.34,
+            "key": "eats.mp.discounts.subscription_basket_dependent_discount",
+            "formattedValue": "($2.34)"
+          },
+          {
+            "label": "Delivery Fee",
+            "type": "credit",
+            "rawValue": 0.49,
+            "key": "eats.mp.charges.booking_fee",
+            "formattedValue": "$0.49"
+          },
+          {
+            "label": "Delivery Discount",
+            "type": "debit",
+            "rawValue": -0.49,
+            "key": "eats.mp.discounts.subscription_delivery_fee_discount",
+            "formattedValue": "($0.49)"
+          },
+          {
+            "label": "Service Fee and Other Fees",
+            "type": "credit",
+            "rawValue": 6.05,
+            "key": "eats.mp.charges.basket_dependent_fee",
+            "formattedValue": "$6.05"
+          },
+          {
+            "label": "Tip",
+            "type": "credit",
+            "rawValue": 5.74,
+            "key": "eats_fare.tip",
+            "formattedValue": "$5.74"
+          },
+          {
+            "label": "Total",
+            "type": "credit",
+            "rawValue": 26.75,
+            "key": "eats_fare.total",
+            "formattedValue": "$26.75"
+          }
+        ]
+      },
+      "ratingInfo": {
+        "isRatable": false,
+        "userRatings": [
+          {
+            "uuid": "e904ea6c-5279-4d6b-bc63-8803ccf32a95",
+            "rating": "fiveStar"
+          }
+        ]
+      },
+      "interactionType": "door_to_door",
+      "deliveryAddress": null,
+      "customerInfos": {
+        "00000000-0000-4000-8000-000000000001": {
+          "uuid": "00000000-0000-4000-8000-000000000001",
+          "firstName": "Alex",
+          "lastName": "Alex",
+          "nickName": "alex@example.com",
+          "phone": "+15555550100",
+          "email": null
+        }
+      }
+    },
+    "beab34a6-f1fd-4907-9f75-6f3783aaca24": {
+      "baseEaterOrder": {
+        "uuid": "beab34a6-f1fd-4907-9f75-6f3783aaca24",
+        "storeUuid": "4525f945-7548-5f9d-bfc3-7c85b9383599",
+        "isCancelled": false,
+        "isCompleted": true,
+        "completedAt": "2026-06-24T13:21:52.000Z",
+        "lastStateChangeAt": "2026-06-24T13:21:52.000Z",
+        "orderStateChanges": [
+          {
+            "stateChangeTime": "2026-06-24T12:24:53.000Z",
+            "type": "CREATED",
+            "changingEntityUuid": null
+          },
+          {
+            "stateChangeTime": "2026-06-24T12:24:53.000Z",
+            "type": "OFFERED",
+            "changingEntityUuid": null
+          },
+          {
+            "stateChangeTime": "2026-06-24T12:44:26.000Z",
+            "type": "ASSIGNED",
+            "changingEntityUuid": null
+          },
+          {
+            "stateChangeTime": "2026-06-24T13:21:52.000Z",
+            "type": "COMPLETED",
+            "changingEntityUuid": "4525f945-7548-5f9d-bfc3-7c85b9383599"
+          }
+        ],
+        "deliveryStateChanges": [
+          {
+            "stateChangeTime": "2026-06-24T12:25:13.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-06-24T12:25:49.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-06-24T12:25:53.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-06-24T12:25:59.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-06-24T12:26:09.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-06-24T12:26:19.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-06-24T12:26:34.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-06-24T12:27:09.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-06-24T12:27:19.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-06-24T12:27:53.000Z",
+            "type": "DISPATCHED"
+          },
+          {
+            "stateChangeTime": "2026-06-24T12:27:59.000Z",
+            "type": "UNKNOWN"
+          },
+          {
+            "stateChangeTime": "2026-06-24T12:44:26.000Z",
+            "type": "PICKUP_ARRIVED"
+          },
+          {
+            "stateChangeTime": "2026-06-24T12:47:27.000Z",
+            "type": "BEGINTRIP"
+          },
+          {
+            "stateChangeTime": "2026-06-24T13:19:03.000Z",
+            "type": "PICKUP_ARRIVED"
+          },
+          {
+            "stateChangeTime": "2026-06-24T13:21:52.000Z",
+            "type": "COMPLETED"
+          }
+        ],
+        "shoppingCart": {
+          "cartUuid": "1e57738f-f249-4b0b-bed9-634c4209e8f6",
+          "items": [
+            {
+              "uuid": "3bdde18a-86bc-5d07-bfec-a0a667d6af1e",
+              "storeUuid": "4525f945-7548-5f9d-bfc3-7c85b9383599",
+              "shoppingCartItemUuid": "e721f5f5-d29a-42c1-8a69-20efcb7582e7",
+              "sectionUuid": "b825937a-9193-5125-80c4-d01c43105a86",
+              "subsectionUuid": "322331ce-9cb2-5505-8f33-a9bb34fc7648",
+              "title": "Everbilt Closet Rod Resin Wall Bracket",
+              "price": 419,
+              "quantity": 1,
+              "specialInstructions": "",
+              "customizations": [],
+              "cartItemCustomizations": {},
+              "consumerUuid": "00000000-0000-4000-8000-000000000001",
+              "rating": null,
+              "itemQuantity": {
+                "inSellableUnit": {
+                  "value": {
+                    "coefficient": 1,
+                    "exponent": 0
+                  },
+                  "measurementUnit": {
+                    "measurementType": "MEASUREMENT_TYPE_COUNT",
+                    "length": null,
+                    "weight": null,
+                    "volume": null
+                  },
+                  "measurementUnitAbbreviationText": null
+                },
+                "inPriceableUnit": null
+              }
+            },
+            {
+              "uuid": "6d07aeb9-32c1-5b99-9b30-4fcbce4f058e",
+              "storeUuid": "4525f945-7548-5f9d-bfc3-7c85b9383599",
+              "shoppingCartItemUuid": "af16d672-2851-40aa-bd0d-06a2014d2556",
+              "sectionUuid": "ddc6c91e-0d2e-5c3a-b3d8-296eaf4fc1f9",
+              "subsectionUuid": "a12c92b7-ea49-55d4-92a7-cc923c954a90",
+              "title": "Bounty Essentials Select-A-Size White Paper Towel Roll (6 Double Rolls)",
+              "price": 1099,
+              "quantity": 1,
+              "specialInstructions": "",
+              "customizations": [],
+              "cartItemCustomizations": {},
+              "consumerUuid": "00000000-0000-4000-8000-000000000001",
+              "rating": null,
+              "itemQuantity": {
+                "inSellableUnit": {
+                  "value": {
+                    "coefficient": 1,
+                    "exponent": 0
+                  },
+                  "measurementUnit": {
+                    "measurementType": "MEASUREMENT_TYPE_COUNT",
+                    "length": null,
+                    "weight": null,
+                    "volume": null
+                  },
+                  "measurementUnitAbbreviationText": null
+                },
+                "inPriceableUnit": null
+              }
+            }
+          ],
+          "currencyCode": "USD"
+        },
+        "currencyCode": "USD",
+        "isScheduledOrder": false,
+        "numItems": 2,
+        "totalQuantity": 2,
+        "fulfillmentType": "DELIVERY_OVER_THE_TOP",
+        "posType": "UNDEFINED",
+        "orderAppVariant": "UBEREATS",
+        "isBackfilledOrder": false,
+        "displayName": "",
+        "billSplitOption": "UNKNOWN_BILL_SPLIT_OPTION",
+        "isOrderCreator": true,
+        "creatorDisplayName": "Alex",
+        "orderCategory": "GROCERY"
+      },
+      "storeInfo": {
+        "uuid": "4525f945-7548-5f9d-bfc3-7c85b9383599",
+        "heroImageUrl": "https://tb-static.uber.com/prod/image-proc/processed_images/72990dfa93225d405027f31233da065d/1130cd428ee928d351d26efda1178b20.jpeg",
+        "title": "The Home Depot",
+        "isOpen": false,
+        "closedMessage": "Opens on Saturday",
+        "location": {
+          "address": {
+            "address1": "40 West 23Rd Street",
+            "aptOrSuite": null,
+            "city": "New York",
+            "country": "US",
+            "postalCode": "10010",
+            "region": "NY",
+            "title": null,
+            "uuid": "61ac5c58-c1ac-4e89-a2ff-95547b4a38aa",
+            "eaterFormattedAddress": "40 West 23Rd Street, New York, NY 10010",
+            "subtitle": null,
+            "businessName": null,
+            "street": null,
+            "ugcAddressFieldInfo": null
+          },
+          "latitude": 40.7419061,
+          "longitude": -73.9910307,
+          "reference": null,
+          "type": null,
+          "placeReferences": null,
+          "interactionType": null,
+          "nickname": null
+        },
+        "storeStatus": {
+          "isActive": true,
+          "notActiveReason": "UNKNOWN"
+        },
+        "contact": {
+          "phoneNumber": "+15555555555"
+        },
+        "territoryUUID": "7c8239ee-388f-4a41-9b07-79115ea1323a",
+        "rating": null,
+        "slug": "the-home-depot-40-west-23rd-street"
+      },
+      "courierInfo": {
+        "name": ""
+      },
+      "fareInfo": {
+        "totalPrice": 1873,
+        "checkoutInfo": [
+          {
+            "label": "Delivery Fee",
+            "type": "credit",
+            "rawValue": 0.99,
+            "key": "eats.mp.charges.booking_fee",
+            "formattedValue": "$0.99"
+          },
+          {
+            "label": "delivery.uber.service_fee",
+            "type": "credit",
+            "rawValue": 0.1,
+            "key": "delivery.uber.service_fee",
+            "formattedValue": "$0.10"
+          },
+          {
+            "label": "Service Fee and Other Fees",
+            "type": "credit",
+            "rawValue": 7.3,
+            "key": "eats.mp.charges.basket_dependent_fee",
+            "formattedValue": "$7.30"
+          },
+          {
+            "label": "Subtotal",
+            "type": "credit",
+            "rawValue": 15.18,
+            "key": "eats_fare.subtotal",
+            "formattedValue": "$15.18"
+          },
+          {
+            "label": "Tax",
+            "type": "credit",
+            "rawValue": 1.35,
+            "key": "eats.tax.base",
+            "formattedValue": "$1.35"
+          },
+          {
+            "label": "Tax on Delivery Fees",
+            "type": "credit",
+            "rawValue": 0.75,
+            "key": "eats.mp.charges.bundled_delivery_fee_taxes",
+            "formattedValue": "$0.75"
+          },
+          {
+            "label": "Delivery Fee Adjustment",
+            "type": "debit",
+            "rawValue": -1.71,
+            "key": "eats.mp.eater.base.delivery_fee_correction.exclusive",
+            "formattedValue": "($1.71)"
+          },
+          {
+            "label": "Delivery Fee Adjustment Tax",
+            "type": "debit",
+            "rawValue": -0.18,
+            "key": "eats.mp.eater.base.delivery_fee_correction.tax.exclusive",
+            "formattedValue": "($0.18)"
+          },
+          {
+            "label": "Food Adjustment",
+            "type": "debit",
+            "rawValue": -3.87,
+            "key": "eats.mp.eater.base.order_correction.exclusive",
+            "formattedValue": "($3.87)"
+          },
+          {
+            "label": "Restaurant Delivery & Service Fee Tax Adjustment",
+            "type": "debit",
+            "rawValue": -0.38,
+            "key": "eats.mp.eater.base.order_correction.facilitator_tax.exclusive",
+            "formattedValue": "($0.38)"
+          },
+          {
+            "label": "Uber One Credits",
+            "type": "debit",
+            "rawValue": -1.17,
+            "key": "eats.mp.discounts.membership.cash_benefit",
+            "formattedValue": "($1.17)"
+          },
+          {
+            "label": "Delivery Discount",
+            "type": "debit",
+            "rawValue": -0.99,
+            "key": "eats.mp.discounts.subscription_delivery_fee_discount",
+            "formattedValue": "($0.99)"
+          },
+          {
+            "label": "Membership Benefit",
+            "type": "debit",
+            "rawValue": -1.2,
+            "key": "eats.mp.discounts.subscription_basket_dependent_discount",
+            "formattedValue": "($1.20)"
+          },
+          {
+            "label": "Tip",
+            "type": "credit",
+            "rawValue": 2.56,
+            "key": "eats_fare.tip",
+            "formattedValue": "$2.56"
+          },
+          {
+            "label": "",
+            "type": "credit",
+            "rawValue": 0,
+            "key": "",
+            "formattedValue": "Price adjusted"
+          },
+          {
+            "label": "Total",
+            "type": "credit",
+            "rawValue": 18.73,
+            "key": "eats_fare.total",
+            "formattedValue": "$18.73"
+          }
+        ]
+      },
+      "ratingInfo": {
+        "isRatable": false,
+        "userRatings": []
+      },
+      "interactionType": "leave_at_door",
+      "deliveryAddress": null,
+      "customerInfos": {
+        "00000000-0000-4000-8000-000000000001": {
+          "uuid": "00000000-0000-4000-8000-000000000001",
+          "firstName": "Alex",
+          "lastName": "Alex",
+          "nickName": "alex@example.com",
+          "phone": "+15555550100",
+          "email": null
+        }
+      }
+    }
+  },
+  "orderUuids": [
+    "b37637a0-18d4-4316-a445-2e62415bb3fb",
+    "858be403-b732-473f-9a67-88c0e50e1e7a",
+    "886c8f6e-4714-43bb-b0e7-eed8eebc7045",
+    "beab34a6-f1fd-4907-9f75-6f3783aaca24"
+  ],
+  "paginationData": {
+    "nextCursor": "{}"
+  },
+  "meta": {
+    "hasMore": true
+  }
+}

@@ -1,10 +1,21 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 language: en-US
 
 reviews:
   high_level_summary: true
   poem: false
   collapse_walkthrough: true
-  
+  # CodeRabbit APPROVES the PR once its comments are resolved (and requests changes while
+  # they are open). main's branch protection requires one approving review, so this
+  # approval is the merge gate.
+  request_changes_workflow: true
+  auto_review:
+    enabled: true # one full review when a PR opens
+    # No automatic re-review on every push: reviews are rate-limited, so fixes are batched
+    # and a re-review is requested explicitly with a "@coderabbitai review" comment.
+    auto_incremental_review: false
+    drafts: false
+
 chat:
   auto_reply: true
 

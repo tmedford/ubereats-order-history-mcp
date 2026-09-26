@@ -1,0 +1,113 @@
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, rmSync, statSync, utimesSync, writeFileSync } from "fs";
+import { tmpdir } from "os";
+import { join } from "path";
+import { ensurePrivateDir, OwnerLock, pidAlive } from "../../../src/core/shared-browser";
+
+let dir: string;
+let lockFile: string;
+let endpointFile: string;
+beforeEach(() => {
+  dir = mkdtempSync(join(tmpdir(), "owner-lock-"));
+  lockFile = join(dir, "profile.owner.lock");
+  endpointFile = join(dir, "DevToolsActivePort");
+});
+afterEach(() => rmSync(dir, { recursive: true, force: true }));
+
+const age = (file: string, ms: number) => {
+  const t = new Date(Date.now() - ms);
+  utimesSync(file, t, t);
+};
+
+describe("OwnerLock", () => {
+  test("first acquirer wins; a second instance cannot take a live lock", () => {
+    const a = new OwnerLock(lockFile, endpointFile, 15_000, 60_000);
+    const b = new OwnerLock(lockFile, endpointFile, 15_000, 60_000);
+    expect(a.tryAcquire()).toBe(true);
+    expect(b.tryAcquire()).toBe(false);
+    expect(a.owner()?.pid).toBe(process.pid);
+    a.release();
+    expect(existsSync(lockFile)).toBe(false);
+  });
+
+  test("a lock held by a dead pid is cleared so the next attempt wins", () => {
+    writeFileSync(lockFile, "999999"); // not a running process
+    const l = new OwnerLock(lockFile, endpointFile);
+    expect(l.tryAcquire()).toBe(false); // clears the stale lock
+    expect(l.tryAcquire()).toBe(true);
+    l.release();
+  });
+
+  test("a live pid that stopped refreshing, with no browser answering, is stale", () => {
+    writeFileSync(lockFile, String(process.ppid)); // alive, but not us
+    age(lockFile, 60_000);
+    const l = new OwnerLock(lockFile, endpointFile, 15_000);
+    expect(l.tryAcquire()).toBe(false);
+    expect(existsSync(lockFile)).toBe(false);
+  });
+
+  test("unlinkIfStale only removes the named owner's lock after the grace period", () => {
+    writeFileSync(lockFile, "4242");
+    const l = new OwnerLock(lockFile, endpointFile, 15_000);
+    l.unlinkIfStale(4242); // fresh - kept
+    expect(existsSync(lockFile)).toBe(true);
+    age(lockFile, 20_000);
+    l.unlinkIfStale(1111); // someone else's - kept
+    expect(existsSync(lockFile)).toBe(true);
+    l.unlinkIfStale(4242);
+    expect(existsSync(lockFile)).toBe(false);
+  });
+
+  test("endpoint is read only from a well-formed DevToolsActivePort", () => {
+    const l = new OwnerLock(lockFile, endpointFile);
+    expect(l.endpoint()).toBeNull();
+    writeFileSync(endpointFile, "9222\n/devtools/browser/abc-123\n");
+    expect(l.endpoint()).toBe("ws://127.0.0.1:9222/devtools/browser/abc-123");
+    writeFileSync(endpointFile, "9222\n/json/version\n");
+    expect(l.endpoint()).toBeNull();
+    writeFileSync(endpointFile, "http://evil\n/devtools/browser/x\n");
+    expect(l.endpoint()).toBeNull();
+  });
+
+  test("release never deletes another process's lock", () => {
+    const l = new OwnerLock(lockFile, endpointFile);
+    expect(l.tryAcquire()).toBe(true);
+    writeFileSync(lockFile, "4242"); // taken over while we were away
+    l.release();
+    expect(existsSync(lockFile)).toBe(true);
+  });
+});
+
+test("pidAlive", () => {
+  expect(pidAlive(process.pid)).toBe(true);
+  expect(pidAlive(999999)).toBe(false);
+  expect(pidAlive(-1)).toBe(false);
+  expect(pidAlive(NaN)).toBe(false);
+});
+
+describe("private on-disk session", () => {
+  test("the lock file is owner-only", () => {
+    const l = new OwnerLock(lockFile, endpointFile);
+    expect(l.tryAcquire()).toBe(true);
+    expect(statSync(lockFile).mode & 0o777).toBe(0o600);
+    l.release();
+  });
+
+  test("the profile directory is created, and re-tightened, as 0700", () => {
+    const profile = join(dir, ".ubereats-order-history-mcp", "browser-data");
+    ensurePrivateDir(profile);
+    expect(statSync(profile).mode & 0o777).toBe(0o700);
+    chmodSync(profile, 0o755);
+    chmodSync(join(dir, ".ubereats-order-history-mcp"), 0o755);
+    ensurePrivateDir(profile);
+    expect(statSync(profile).mode & 0o777).toBe(0o700);
+    expect(statSync(join(dir, ".ubereats-order-history-mcp")).mode & 0o777).toBe(0o700);
+  });
+
+  test("a parent directory that is not the connector's is left alone", () => {
+    const shared = join(dir, "shared");
+    mkdirSync(shared, { mode: 0o755 });
+    chmodSync(shared, 0o755);
+    ensurePrivateDir(join(shared, "profile"));
+    expect(statSync(shared).mode & 0o777).toBe(0o755);
+  });
+});

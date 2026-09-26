@@ -7,3 +7,13 @@ coverage/
 # raw captures straight from a real account - never commit; tests use scrubbed fixtures
 captures/
 .env
+
+# Claude Code — track config (agents, commands, skills, workflows),
+# exclude everything runtime, personal, or machine-local.
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+.claude/claude.db
+.claude/.DS_Store
+.claude/worktrees/
+.claude/agent-memory/
+.cursor/

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+.browser-data/
+*.log
+.DS_Store
+# raw captures straight from a real account - never commit; tests use scrubbed fixtures
+captures/
+.env

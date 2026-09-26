@@ -46,9 +46,12 @@ describe("AuthGuard", () => {
     expect(calls.reimport).toBe(3);
   });
 
-  test("a check that throws counts as signed out and is retried", async () => {
-    const { d } = deps([new Error("page crashed"), IN]);
-    await expect(new AuthGuard(d, opts).ensure()).resolves.toMatchObject({ ok: true, repaired: true });
+  test("a check that fails for another reason propagates - no re-import, no sign-in advice", async () => {
+    const { d, calls } = deps([new Error("UPSTREAM_ERROR: HTTP 502"), IN]);
+    const g = new AuthGuard(d, opts);
+    await expect(g.ensure()).rejects.toThrow("HTTP 502");
+    expect(calls.reimport).toBe(0);
+    await expect(g.ensure()).resolves.toMatchObject({ ok: true }); // the failed check is not cached
   });
 
   test("success is trusted for ttlMs; invalidate() forces a re-check", async () => {

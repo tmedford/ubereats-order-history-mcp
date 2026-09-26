@@ -169,9 +169,7 @@ export class UberEatsClient {
    * Charges can post days after the order (tips, refunds), so orders are searched from
    * `lookbackDays` before startDate, then each charge is kept when ITS date is in range.
    */
-  async listTransactions(
-    opts: ListOrdersOptions & { lookbackDays?: number; concurrency?: number } = {},
-  ): Promise<{
+  async listTransactions(opts: ListOrdersOptions & { lookbackDays?: number; concurrency?: number } = {}): Promise<{
     transactions: EatsTransaction[];
     ordersScanned: number;
     pages: number;
@@ -199,7 +197,9 @@ export class UberEatsClient {
     });
     const inRange = transactions.filter((t) => {
       const day = t.chargedAt?.slice(0, 10) ?? localDate(t.orderPlacedAt, this.timeZone);
-      return (!opts.startDate || !day || day >= opts.startDate) && (!opts.endDate || !day || day <= opts.endDate);
+      // an undated charge cannot be shown to be in range - keep it only for an unbounded query
+      if (!day) return !opts.startDate && !opts.endDate;
+      return (!opts.startDate || day >= opts.startDate) && (!opts.endDate || day <= opts.endDate);
     });
     inRange.sort((a, b) => (b.chargedAt ?? "").localeCompare(a.chargedAt ?? ""));
     return {

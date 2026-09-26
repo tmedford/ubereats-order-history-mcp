@@ -146,6 +146,22 @@ describe("transactions", () => {
     expect(res2.receiptErrors.map((e) => e.orderId).sort()).toEqual([homeDepot.id, orders[0].id].sort());
   });
 
+  test("an undated charge is dropped from a bounded query (it cannot be shown in range)", async () => {
+    const raw = order("u", "2026-09-20T15:00:00Z");
+    delete raw.baseEaterOrder.orderStateChanges;
+    delete raw.baseEaterOrder.completedAt;
+    delete raw.baseEaterOrder.lastStateChangeAt;
+    const html = receiptHtml("grocery").replace(/data-testid="payments_0_date_time"/, 'data-testid="x"');
+    const f = fakeRpc([[raw]], { u: html });
+    const bounded = await new UberEatsClient(f.rpc, "UTC").listTransactions({
+      startDate: "2026-09-01",
+      endDate: "2026-09-30",
+    });
+    expect(bounded.transactions).toEqual([]);
+    const open = await new UberEatsClient(fakeRpc([[raw]], { u: html }).rpc, "UTC").listTransactions();
+    expect(open.transactions).toHaveLength(1);
+  });
+
   test("a signed-out receipt aborts the whole listing (so the guard can repair it)", async () => {
     const rpc = {
       call: async (op: string) =>

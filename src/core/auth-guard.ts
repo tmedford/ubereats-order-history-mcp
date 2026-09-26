@@ -19,7 +19,11 @@ export interface SignInCheck {
 }
 
 export interface AuthGuardDeps {
-  /** Ask the service whether this session is signed in. */
+  /**
+   * Ask the service whether this session is signed in. Resolve {authenticated:false} ONLY
+   * for a real signed-out answer; any other failure must reject, so an outage surfaces as
+   * itself instead of triggering cookie re-imports and "sign in to Chrome" advice.
+   */
   check(): Promise<SignInCheck>;
   /** Copy Chrome's cookies into the browser; returns how many. */
   reimport(): Promise<number>;
@@ -74,23 +78,15 @@ export class AuthGuard {
     return this.inFlight;
   }
 
-  private async safeCheck(): Promise<SignInCheck> {
-    try {
-      return await this.deps.check();
-    } catch (e) {
-      return { authenticated: false, message: e instanceof Error ? e.message : String(e) };
-    }
-  }
-
   private async run(): Promise<EnsureResult> {
-    let status = await this.safeCheck();
+    let status = await this.deps.check();
     let attempts = 0;
     while (!status.authenticated && attempts < this.opts.backoffMs.length) {
       const imported = await this.deps.reimport().catch(() => 0);
       console.error(`[auth] signed out - re-imported ${imported} Chrome cookies (attempt ${attempts + 1})`);
       await this.deps.sleep(this.opts.backoffMs[attempts]);
       attempts++;
-      status = await this.safeCheck();
+      status = await this.deps.check();
       // Chrome has no session to give: waiting and re-importing nothing again cannot help.
       if (imported === 0) break;
     }

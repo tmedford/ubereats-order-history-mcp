@@ -23,7 +23,7 @@ Uber Eats receipt emails often omit the items (store orders like Target show onl
 ```
 Claude ──stdio──> ubereats-order-history-mcp
                       │  1. copy ubereats.com + uber.com cookies out of Chrome (macOS Keychain
-                      │     consent; decrypted in memory only, never logged)
+                      │     consent; never logged) into the connector's own profile
                       │  2. launch the REAL installed Chrome (headless) with those cookies,
                       │     or attach to the one another Claude session already launched
                       │  3. open https://www.ubereats.com/robots.txt (tiny, same origin)
@@ -116,7 +116,7 @@ No browser download is needed: `playwright-core` drives your installed Chrome.
 
 - **Read-only by construction.** The only Uber operations in the code are the three read RPCs above.
 - **Nothing leaves your machine.** No telemetry and no third-party calls. Requests go from your own Chrome to ubereats.com.
-- **Cookies**: only `ubereats.com` / `uber.com` cookies are decrypted, in memory, and handed to the connector's own browser profile. Values are never logged. Chrome's app-bound (`v20`) cookie encryption is refused, not bypassed.
+- **Cookies**: only `ubereats.com` / `uber.com` cookies are decrypted (Chrome's master key is held in memory for one import only). They are then written into the connector's own **persistent** browser profile, `UBEREATS_ORDERS_BROWSER_DATA_DIR` (default `~/.ubereats-order-history-mcp/browser-data`), so the session stays on disk after the server stops, like any browser profile. Delete that directory to remove it; Chrome's own session is untouched. Values are never logged. Chrome's app-bound (`v20`) cookie encryption is refused, not bypassed.
 - **The debugging port** is random, bound to `127.0.0.1`, and only attached to via the owning profile's `DevToolsActivePort` while the owner process is alive.
 - Test fixtures are real responses **scrubbed** by `scripts/scrub-fixtures.mjs`: names, email, phone, addresses, courier names, user ids, URLs and card digits are removed, and the script fails if any known value survives.
 

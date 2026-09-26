@@ -33,7 +33,7 @@ const RULES = [
   },
   {
     name: "credentials in a URL",
-    re: /(?:https?:)?\/\/[^\s/"'@:]+:[^\s/"'@]+@[\w.-]+|_auth(?:Token)?\s*[=:]\s*["']?[\w+/=.-]{8,}/g,
+    re: /(?:https?:)?\/\/[^\s/"'@:]+:[^\s/"'@]+@[\w.-]+|_auth(?:Token)?["']?\s*[=:]\s*["']?[\w+/=.-]{8,}/g,
     ok: () => false,
     credential: true,
   },

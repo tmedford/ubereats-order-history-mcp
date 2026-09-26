@@ -101,6 +101,35 @@ describe("parseOrdersPage (real, scrubbed getPastOrdersV1 page)", () => {
     expect(fixed.items[0].lineTotalSource).toBe("computed");
   });
 
+  test("non-Latin titles keep distinct keys: a line printed for one never lands on the other", () => {
+    const o = { ...page.orders[0] };
+    o.items = [
+      { ...o.items[0], id: "x1", title: "寿司", quantity: 1 },
+      { ...o.items[1], id: "x2", title: "拉麺", quantity: 1 },
+    ];
+    const fixed = withReceiptLineTotals(o, [{ id: "legacy-0", title: "拉麺", quantity: 1, amount: 9.5 }]);
+    expect(fixed.items.map((i) => [i.title, i.lineTotalSource])).toEqual([
+      ["寿司", "computed"],
+      ["拉麺", "receipt"],
+    ]);
+  });
+
+  test("two order items with the same title and quantity are ambiguous: both stay computed", () => {
+    const o = { ...page.orders[0] };
+    o.items = [
+      { ...o.items[0], id: "a", title: "Latte", quantity: 1, lineTotal: 5 },
+      { ...o.items[1], id: "b", title: "Latte", quantity: 1, lineTotal: 6 },
+    ];
+    const fixed = withReceiptLineTotals(o, [
+      { id: "legacy-0", title: "Latte", quantity: 1, amount: 6 },
+      { id: "legacy-1", title: "Latte", quantity: 1, amount: 5 },
+    ]);
+    expect(fixed.items.map((i) => [i.lineTotal, i.lineTotalSource])).toEqual([
+      [5, "computed"],
+      [6, "computed"],
+    ]);
+  });
+
   test("receipts with no printed line amounts leave the order unchanged", () => {
     const o = page.orders[0];
     expect(withReceiptLineTotals(o, [{ id: o.items[0].id, amount: null }])).toBe(o);

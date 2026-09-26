@@ -140,6 +140,39 @@ describe("legacy layout variants (no data-testid hooks)", () => {
     expect(cells).toEqual(["a", "b", "c"]);
   });
 
+  test("non-dollar currencies are money cells too; a bare number stays a quantity", () => {
+    const cell = (t: string) => `<tr><td>${t}</td></tr>`;
+    const html =
+      "<table>" +
+      [
+        "€14.50",
+        "Total",
+        "€14.50",
+        "2",
+        "Espresso",
+        "€6.00",
+        "€3.00/pc",
+        "Subtotal",
+        "€6.00",
+        "Service Fee",
+        "€8.50",
+        "Payments",
+        "Visa ••••1234",
+        "3/4/25 9:05 AM",
+        "€14.50",
+      ]
+        .map(cell)
+        .join("") +
+      "</table>";
+    const r = parseReceiptHtml(html, "eur");
+    expect(r.items).toEqual([{ id: "legacy-0", title: "Espresso", quantity: 2, amount: 6, options: [] }]);
+    expect(r.fareLines.map((l) => [l.key, l.amount])).toEqual([
+      ["item_subtotal", 6],
+      ["service_fee", 8.5],
+    ]);
+    expect(r.payments[0]).toMatchObject({ last4: "1234", amount: 14.5, amountInferred: false });
+  });
+
   test("a legacy page with no Payments section yields no charges, not garbage", () => {
     const r = parseReceiptHtml("<table><tr><td>Total</td><td>$5.00</td></tr></table>", "x");
     expect(r).toMatchObject({ layout: "legacy", total: 5, payments: [], items: [] });

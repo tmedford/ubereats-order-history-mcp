@@ -75,7 +75,7 @@ One row per card charge or refund, the shape of a card statement. `start_date` (
 ]
 ```
 
-`chargedAt` is the wall-clock time printed on the receipt (no time zone). A charge the receipt prints without an amount is `null`; the one exception is a single-charge receipt, which gets the receipt total, flagged `amountInferred: true`.
+`chargedAt` is the wall-clock time printed on the receipt (no time zone). A charge the receipt prints without an amount is `null`, unless it is the ONLY such charge on its receipt. Then it is inferred as the receipt total minus the other charges (the whole total for a single-charge receipt), and flagged `amountInferred: true`, so it is never mistaken for an amount Uber printed. On a real account no amounts needed inferring: every receipt printed all of them.
 
 ### `get_ubereats_order_details`
 `order_id` (UUID), `include_receipt` (default true). Returns the order plus the parsed receipt: payments, fare lines, printed item amounts and options, pickup and drop-off addresses.

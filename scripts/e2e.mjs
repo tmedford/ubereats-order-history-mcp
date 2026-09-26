@@ -140,10 +140,17 @@ async function main() {
     );
 
   console.log("4b. lookup by store name, and the history floor");
-  const hd = await a.call("get_ubereats_orders", { store: "home depot", start_date: daysAgo(400) });
+  // pick a store this account really has, so an empty result cannot pass as "filtered"
+  const pickStore = all[0]?.store?.name ?? newest.store.name;
+  const word = pickStore.split(/[^\p{L}\p{N}]+/u).find((w) => w.length >= 3) ?? pickStore;
+  const hd = await a.call("get_ubereats_orders", { store: word, start_date: start, end_date: end });
+  const hdStores = new Set(hd.payload.orders.map((o) => o.store.name));
   ok(
-    !hd.isError && hd.payload.orders.every((o) => /home depot/i.test(o.store.name)),
-    `store filter: ${hd.payload.orderCount} Home Depot orders, no others`,
+    !hd.isError &&
+      hd.payload.orderCount > 0 &&
+      hdStores.has(pickStore) &&
+      [...hdStores].every((n) => n.toLowerCase().includes(word.toLowerCase())),
+    `store filter "${word}": ${hd.payload.orderCount} orders, all from matching stores (${[...hdStores].join(", ")})`,
   );
   const old = await a.call("get_ubereats_orders", {
     start_date: "2015-01-01",

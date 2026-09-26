@@ -6,7 +6,7 @@
 
 import type { SignInCheck } from "../core/auth-guard";
 import { mapLimit } from "../core/retry";
-import { EatsOrder, parseOrder, parseOrdersPage, round2 } from "./orders";
+import { EatsOrder, normalizeName, parseOrder, parseOrdersPage, round2 } from "./orders";
 import { EatsReceipt, parseReceiptHtml } from "./receipt";
 import { UberEatsError, UberEatsRpc } from "./rpc";
 
@@ -41,20 +41,15 @@ export interface ListOrdersOptions {
   onPage?(page: number, ordersSoFar: number): void;
 }
 
-/** "McDonald's® (Ponce)" -> "mcdonalds ponce": compare store names without case, marks or punctuation. */
-export function normalizeStoreName(s: string): string {
-  return s
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[®™©'’`]/g, "")
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-}
-
+/**
+ * Case-, mark- and punctuation-insensitive "name contains". A query with nothing searchable
+ * left after normalising (e.g. only punctuation) matches NOTHING - never every order.
+ * The tool layer rejects such a query up front; this is the backstop.
+ */
 export function storeMatches(order: EatsOrder, query: string | undefined): boolean {
-  if (!query) return true;
-  const q = normalizeStoreName(query);
-  return !q || normalizeStoreName(order.store.name).includes(q);
+  if (query === undefined || query === "") return true;
+  const q = normalizeName(query);
+  return q !== "" && normalizeName(order.store.name).includes(q);
 }
 
 export interface ListOrdersResult {
@@ -76,12 +71,23 @@ export interface ListOrdersResult {
 export function historyWarning(
   res: { reachedEnd: boolean; oldestSeen: string | null },
   startDate?: string,
+  /** Where the ORDER search actually started (transactions look back before startDate). */
+  searchStart = startDate,
 ): string | null {
-  if (!res.reachedEnd || !startDate || !res.oldestSeen || startDate >= res.oldestSeen) return null;
-  return (
-    `Uber Eats serves order history back to ${res.oldestSeen} only; nothing before that date can be read ` +
-    `here (Uber's data download at help.uber.com covers older orders).`
-  );
+  if (!res.reachedEnd || !res.oldestSeen) return null;
+  if (startDate && startDate < res.oldestSeen) {
+    return (
+      `Uber Eats serves order history back to ${res.oldestSeen} only; nothing before that date can be read ` +
+      `here (Uber's data download at help.uber.com covers older orders).`
+    );
+  }
+  if (searchStart && searchStart < res.oldestSeen) {
+    return (
+      `Lookback incomplete: charges in this range from orders placed before ${res.oldestSeen} (a late tip or ` +
+      `refund) cannot be read - Uber Eats' history starts there.`
+    );
+  }
+  return null;
 }
 
 export interface EatsTransaction {

@@ -1,15 +1,7 @@
 import { readFileSync } from "fs";
 import { join } from "path";
-import {
-  addDays,
-  historyWarning,
-  localDate,
-  normalizeStoreName,
-  OPS,
-  toTransactions,
-  UberEatsClient,
-} from "../../../src/ubereats/client";
-import { parseOrdersPage } from "../../../src/ubereats/orders";
+import { addDays, historyWarning, localDate, OPS, toTransactions, UberEatsClient } from "../../../src/ubereats/client";
+import { normalizeName, parseOrdersPage } from "../../../src/ubereats/orders";
 import { parseReceiptHtml } from "../../../src/ubereats/receipt";
 import { UberEatsError, UberEatsRpc } from "../../../src/ubereats/rpc";
 
@@ -123,6 +115,7 @@ describe("store filter and history bounds", () => {
     ["McDonald's", ["a"]],
     ["nobody", []],
     ["", ["a", "b", "c", "d"]],
+    ["!!!", []], // nothing searchable left: matches NOTHING, never everything
   ])("store %j", async (q, ids) => {
     const res = await new UberEatsClient(fakeRpc(history).rpc, "UTC").listOrders({ store: q });
     expect(res.orders.map((o) => o.id)).toEqual(ids);
@@ -135,8 +128,12 @@ describe("store filter and history bounds", () => {
     expect(f.calls.filter((c) => c.op === OPS.receipt).map((c) => c.body.workflowUuid)).toEqual(["b", "c"]);
   });
 
-  test("normalizeStoreName drops case, marks and punctuation", () => {
-    expect(normalizeStoreName("McDonald's® (Decatur-Clairmnt)")).toBe("mcdonalds decatur clairmnt");
+  test("normalizeName drops case, marks and punctuation but keeps every script", () => {
+    expect(normalizeName("McDonald's® (Decatur-Clairmnt)")).toBe("mcdonalds decatur clairmnt");
+    expect(normalizeName("寿司")).toBe("寿司");
+    expect(normalizeName("拉麺 (Ramen)")).toBe("拉麺 ramen");
+    expect(normalizeName("Café Olé")).toBe("café olé");
+    expect(normalizeName("!!!")).toBe("");
   });
 
   test("asking for dates before the served history says so; inside it, it does not", async () => {
@@ -146,6 +143,9 @@ describe("store filter and history bounds", () => {
     expect(historyWarning(res, "2026-08-21")).toBeNull();
     expect(historyWarning({ reachedEnd: false, oldestSeen: "2026-08-20" }, "2023-01-01")).toBeNull();
     expect(historyWarning(res, undefined)).toBeNull();
+    // start inside the history, but the transactions lookback reaches before it
+    expect(historyWarning(res, "2026-08-22", "2026-08-15")).toMatch(/Lookback incomplete.*before 2026-08-20/);
+    expect(historyWarning(res, "2026-08-30", "2026-08-23")).toBeNull();
   });
 });
 

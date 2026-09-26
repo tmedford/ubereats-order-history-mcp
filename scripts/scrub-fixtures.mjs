@@ -54,7 +54,7 @@ for (const f of readdirSync(CAP).filter((f) => f.startsWith("receipt-"))) {
   add(grab("driverInfo_title")?.replace(/^(Delivered|Picked up) by\s+/i, ""));
   add(grab("address_point_1_address"));
   // the older table template has no data-testid hooks: take the greeting's name from text
-  for (const m of h.matchAll(/Thanks for (?:ordering|tipping), ([A-Z][^<.,!]{1,40})/g)) add(m[1]);
+  for (const m of h.matchAll(/Thanks for (?:ordering|tipping), ([A-Z][^<,!]{1,40})/g)) add(m[1].replace(/\.$/, ""));
 }
 // Any card digits found are replaced deterministically (first card seen -> 1111, next -> 2222, ...),
 // so fixtures keep "two different cards" without shipping real numbers.

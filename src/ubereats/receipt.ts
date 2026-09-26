@@ -157,7 +157,12 @@ export function textCells(root: HTMLElement): string[] {
   return cells;
 }
 
-const MONEY = /^(-|−)?\$[\d,]+(\.\d+)?$/;
+/**
+ * A printed money cell: an optional minus, a currency symbol or code ($, €, £, ¥, ₹, CA$,
+ * A$, US$, ...) and an amount - the same amounts parseMoney accepts. A bare number is NOT
+ * money (it is an item quantity).
+ */
+const MONEY = /^(-|−)?\s?(?:[$€£¥₹]|[A-Z]{1,3}\$?)\s?[\d,]+(\.\d+)?$/;
 const CHARGE_TIME = /^\d{1,2}\/\d{1,2}\/\d{2,4}\s+\d{1,2}:\d{2}\s*[AP]M$/i;
 
 /**

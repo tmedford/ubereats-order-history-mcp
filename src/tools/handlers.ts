@@ -8,8 +8,8 @@ import { mkdirSync, renameSync, rmSync, writeFileSync } from "fs";
 import { randomBytes } from "crypto";
 import { homedir } from "os";
 import { dirname, join, resolve } from "path";
-import { historyWarning, type UberEatsClient } from "../ubereats/client";
-import { withReceiptLineTotals } from "../ubereats/orders";
+import { addDays, historyWarning, type UberEatsClient } from "../ubereats/client";
+import { normalizeName, withReceiptLineTotals } from "../ubereats/orders";
 import { CsvKind, itemsCsv, ordersCsv, transactionsCsv } from "./csv";
 
 export const TOOLS = [
@@ -116,14 +116,19 @@ function optStore(args: Record<string, unknown>): string | undefined {
   if (v === undefined || v === null || v === "") return undefined;
   if (typeof v !== "string" || v.length > 80)
     throw new InputError("store must be a store name (at most 80 characters)");
+  if (!normalizeName(v)) throw new InputError("store must contain letters or digits");
   return v;
 }
 
 /** Every warning that applies to a walk, joined - never just the first. */
-function warnings(res: { truncated: boolean; reachedEnd: boolean; oldestSeen: string | null }, startDate?: string) {
+function warnings(
+  res: { truncated: boolean; reachedEnd: boolean; oldestSeen: string | null },
+  startDate?: string,
+  searchStart = startDate,
+) {
   const w = [
     res.truncated ? "Stopped at max_pages before reaching start_date; raise max_pages for older orders." : null,
-    historyWarning(res, startDate),
+    historyWarning(res, startDate, searchStart),
   ].filter(Boolean);
   return w.length ? { warning: w.join(" ") } : {};
 }
@@ -250,12 +255,13 @@ export async function handleTool(
         throw new InputError("card_last4 must be 4 digits");
       }
       const store = optStore(args);
+      const lookbackDays = optInt(args, "lookback_days", 7, 0, 60);
       const res = await client.listTransactions({
         startDate,
         endDate,
         store,
         maxPages: optInt(args, "max_pages", 60, 1, 500),
-        lookbackDays: optInt(args, "lookback_days", 7, 0, 60),
+        lookbackDays,
       });
       const txns = last4 ? res.transactions.filter((t) => t.last4 === last4) : res.transactions;
       return {
@@ -267,7 +273,7 @@ export async function handleTool(
           ? { note: "Some receipts printed no amount for a charge (amount: null)." }
           : {}),
         ordersScanned: res.ordersScanned,
-        ...warnings(res, startDate),
+        ...warnings(res, startDate, addDays(startDate, -lookbackDays)),
         ...(res.receiptErrors.length ? { receiptErrors: res.receiptErrors } : {}),
         transactions: txns,
       };
@@ -285,21 +291,24 @@ export async function handleTool(
       const store = optStore(args);
       let csv: string;
       let rows: number;
+      let warn: { warning?: string };
       if (kind === "transactions") {
         const res = await client.listTransactions({ startDate, endDate, maxPages, store });
         csv = transactionsCsv(res.transactions);
         rows = res.transactions.length;
+        warn = warnings(res, startDate, startDate ? addDays(startDate, -7) : undefined);
       } else {
         const res = await client.listOrders({ startDate, endDate, maxPages, store });
         csv = kind === "orders" ? ordersCsv(res.orders) : itemsCsv(res.orders);
         rows = kind === "orders" ? res.orders.length : res.orders.reduce((s, o) => s + o.items.length, 0);
+        warn = warnings(res, startDate);
       }
       const out =
         typeof args.output_path === "string" && args.output_path
           ? resolve(args.output_path.replace(/^~(?=$|\/)/, homedir()))
           : join(homedir(), "Downloads", `ubereats-${kind}-${startDate ?? "all"}-to-${endDate ?? "now"}.csv`);
       writePrivateFile(out, csv);
-      return { status: "success", kind, path: out, rows };
+      return { status: "success", kind, path: out, rows, ...warn };
     }
 
     default:

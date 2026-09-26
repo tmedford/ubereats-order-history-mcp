@@ -212,42 +212,55 @@ export function itemsMatch(items: EatsOrderItem[], subtotal: number | null): boo
 }
 
 /**
+ * Compare names from different sources (order feed vs receipt, a user's store query vs the
+ * store title) without case, trademark marks or punctuation. Letters and digits of EVERY
+ * script are kept: "寿司" and "拉麺" must stay different keys, not both collapse to "".
+ */
+export function normalizeName(s: string): string {
+  return s
+    .normalize("NFKC")
+    .toLowerCase()
+    .replace(/[®™©'’`]/gu, "")
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim();
+}
+
+/**
  * Receipts print the exact charged amount per line for restaurant orders (blank for
  * grocery, which has no add-ons). Where printed, it is authoritative: option pricing has
  * edge cases the order feed does not disambiguate (an included patty listed with its
  * extra-unit price and defaultQuantity 0).
  */
-/** Compare item titles as printed on the order feed vs the receipt (marks, case, spacing). */
-export function normalizeTitle(s: string): string {
-  return s
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[®™©'’`]/g, "")
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-}
-
 export function withReceiptLineTotals(
   order: EatsOrder,
   receiptItems: { id: string; title?: string; quantity?: number | null; amount: number | null }[],
 ): EatsOrder {
   const printed = receiptItems.filter((r) => r.amount !== null);
   if (printed.length === 0) return order;
-  // Current receipts key items by the cart-item id; the legacy template has no ids, so its
-  // lines join by title (and quantity when printed), each receipt line used at most once.
+  // Current receipts key items by the cart-item id. The legacy template has no ids, so its
+  // lines join by title + quantity - but ONLY when that key is unambiguous: two order items
+  // sharing a title and quantity (different paid options, say) could otherwise swap amounts
+  // while the subtotal still "matches". Ambiguous or empty keys stay computed.
   const byId = new Map(printed.map((r) => [r.id, r]));
+  const key = (title: string | undefined, qty: number | null | undefined) =>
+    title === undefined ? "" : `${normalizeName(title)}|${qty ?? "?"}`;
+  const orderKeyCount = new Map<string, number>();
+  for (const i of order.items) {
+    const k = key(i.title, i.quantity);
+    orderKeyCount.set(k, (orderKeyCount.get(k) ?? 0) + 1);
+  }
   const used = new Set<(typeof printed)[number]>();
   const items = order.items.map((i) => {
     let hit = byId.get(i.id);
-    if (!hit) {
-      const t = normalizeTitle(i.title);
-      hit = printed.find(
+    if (!hit && normalizeName(i.title) && orderKeyCount.get(key(i.title, i.quantity)) === 1) {
+      const candidates = printed.filter(
         (r) =>
           !used.has(r) &&
           r.title !== undefined &&
-          normalizeTitle(r.title) === t &&
+          normalizeName(r.title) === normalizeName(i.title) &&
           (r.quantity == null || r.quantity === i.quantity),
       );
+      if (candidates.length === 1) hit = candidates[0];
     }
     if (!hit || used.has(hit)) return i;
     used.add(hit);

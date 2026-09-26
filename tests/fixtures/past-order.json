@@ -1,0 +1,311 @@
+{
+  "order": {
+    "baseEaterOrder": {
+      "uuid": "b37637a0-18d4-4316-a445-2e62415bb3fb",
+      "storeUuid": "a3ca4f37-d671-5302-bf15-012ccf64a16b",
+      "isCancelled": false,
+      "isCompleted": true,
+      "completedAt": "2026-09-22T00:04:38.000Z",
+      "lastStateChangeAt": "2026-09-22T00:04:38.000Z",
+      "orderStateChanges": [
+        {
+          "stateChangeTime": "2026-09-21T23:09:58.000Z",
+          "type": "CREATED",
+          "changingEntityUuid": null
+        },
+        {
+          "stateChangeTime": "2026-09-21T23:09:58.000Z",
+          "type": "OFFERED",
+          "changingEntityUuid": null
+        },
+        {
+          "stateChangeTime": "2026-09-21T23:36:53.000Z",
+          "type": "ASSIGNED",
+          "changingEntityUuid": null
+        },
+        {
+          "stateChangeTime": "2026-09-22T00:04:38.000Z",
+          "type": "COMPLETED",
+          "changingEntityUuid": "a3ca4f37-d671-5302-bf15-012ccf64a16b"
+        }
+      ],
+      "deliveryStateChanges": [
+        {
+          "stateChangeTime": "2026-09-21T23:10:34.000Z",
+          "type": "DISPATCHED"
+        },
+        {
+          "stateChangeTime": "2026-09-21T23:10:41.000Z",
+          "type": "DISPATCHED"
+        },
+        {
+          "stateChangeTime": "2026-09-21T23:11:00.000Z",
+          "type": "DISPATCHED"
+        },
+        {
+          "stateChangeTime": "2026-09-21T23:11:07.000Z",
+          "type": "DISPATCHED"
+        },
+        {
+          "stateChangeTime": "2026-09-21T23:13:43.000Z",
+          "type": "DISPATCHED"
+        },
+        {
+          "stateChangeTime": "2026-09-21T23:14:43.000Z",
+          "type": "DISPATCHED"
+        },
+        {
+          "stateChangeTime": "2026-09-21T23:14:59.000Z",
+          "type": "DISPATCHED"
+        },
+        {
+          "stateChangeTime": "2026-09-21T23:15:18.000Z",
+          "type": "DISPATCHED"
+        },
+        {
+          "stateChangeTime": "2026-09-21T23:15:40.000Z",
+          "type": "DISPATCHED"
+        },
+        {
+          "stateChangeTime": "2026-09-21T23:15:55.000Z",
+          "type": "DISPATCHED"
+        },
+        {
+          "stateChangeTime": "2026-09-21T23:16:02.000Z",
+          "type": "DISPATCHED"
+        },
+        {
+          "stateChangeTime": "2026-09-21T23:16:18.000Z",
+          "type": "DISPATCHED"
+        },
+        {
+          "stateChangeTime": "2026-09-21T23:16:24.000Z",
+          "type": "DISPATCHED"
+        },
+        {
+          "stateChangeTime": "2026-09-21T23:16:39.000Z",
+          "type": "DISPATCHED"
+        },
+        {
+          "stateChangeTime": "2026-09-21T23:19:02.000Z",
+          "type": "DISPATCHED"
+        },
+        {
+          "stateChangeTime": "2026-09-21T23:19:13.000Z",
+          "type": "UNKNOWN"
+        },
+        {
+          "stateChangeTime": "2026-09-21T23:27:05.000Z",
+          "type": "PICKUP_ARRIVED"
+        },
+        {
+          "stateChangeTime": "2026-09-21T23:37:50.000Z",
+          "type": "BEGINTRIP"
+        },
+        {
+          "stateChangeTime": "2026-09-22T00:01:53.000Z",
+          "type": "PICKUP_ARRIVED"
+        },
+        {
+          "stateChangeTime": "2026-09-22T00:04:38.000Z",
+          "type": "COMPLETED"
+        }
+      ],
+      "shoppingCart": {
+        "cartUuid": "501965d2-4dc4-461d-a90d-9564c95cd240",
+        "items": [
+          {
+            "uuid": "d0cd425d-5ffc-5baa-a66a-8b407d3d2ead",
+            "storeUuid": "a3ca4f37-d671-5302-bf15-012ccf64a16b",
+            "shoppingCartItemUuid": "166dbc2b-b767-44ab-82f3-842eb73bcf99",
+            "sectionUuid": "dbef43fc-1be8-56eb-b667-795ea300e123",
+            "subsectionUuid": "dbef43fc-1be8-56eb-b667-795ea300e123",
+            "title": "Cascade Platinum Dishwasher Detergent Liquid, Fresh (75 fl oz)",
+            "price": 1439,
+            "quantity": 1,
+            "specialInstructions": "",
+            "customizations": [],
+            "cartItemCustomizations": {},
+            "consumerUuid": "00000000-0000-4000-8000-000000000001",
+            "rating": null,
+            "itemQuantity": {
+              "inSellableUnit": {
+                "value": {
+                  "coefficient": 1,
+                  "exponent": 0
+                },
+                "measurementUnit": {
+                  "measurementType": "MEASUREMENT_TYPE_COUNT",
+                  "length": null,
+                  "weight": null,
+                  "volume": null
+                },
+                "measurementUnitAbbreviationText": null
+              },
+              "inPriceableUnit": null
+            }
+          },
+          {
+            "uuid": "a61a53b0-7df1-588a-8054-7beca390af19",
+            "storeUuid": "a3ca4f37-d671-5302-bf15-012ccf64a16b",
+            "shoppingCartItemUuid": "84b735c8-97ce-40da-852f-ac521e3eca84",
+            "sectionUuid": "ddc65789-b25e-5786-b700-52d92d91de31",
+            "subsectionUuid": "eeedacb3-daef-5297-88e9-28ac43cd022c",
+            "title": "Dealworthy Hdmi High Speed Cable With Ethernet Cable, 6 ft, Black",
+            "price": 1079,
+            "quantity": 1,
+            "specialInstructions": "",
+            "customizations": [],
+            "cartItemCustomizations": {},
+            "consumerUuid": "00000000-0000-4000-8000-000000000001",
+            "rating": null,
+            "itemQuantity": {
+              "inSellableUnit": {
+                "value": {
+                  "coefficient": 1,
+                  "exponent": 0
+                },
+                "measurementUnit": {
+                  "measurementType": "MEASUREMENT_TYPE_COUNT",
+                  "length": null,
+                  "weight": null,
+                  "volume": null
+                },
+                "measurementUnitAbbreviationText": null
+              },
+              "inPriceableUnit": null
+            }
+          }
+        ],
+        "currencyCode": "USD"
+      },
+      "currencyCode": "USD",
+      "isScheduledOrder": false,
+      "numItems": 2,
+      "totalQuantity": 2,
+      "fulfillmentType": "DELIVERY_OVER_THE_TOP",
+      "posType": "UNDEFINED",
+      "orderAppVariant": "UBEREATS",
+      "isBackfilledOrder": false,
+      "displayName": "",
+      "billSplitOption": "UNKNOWN_BILL_SPLIT_OPTION",
+      "isOrderCreator": true,
+      "creatorDisplayName": "Alex",
+      "orderCategory": "GROCERY"
+    },
+    "storeInfo": {
+      "uuid": "a3ca4f37-d671-5302-bf15-012ccf64a16b",
+      "heroImageUrl": "https://tb-static.uber.com/prod/image-proc/processed_images/70c88cdb6b5fb8560e3091a5022f27f6/c67d558c633281f9c71fc6a90ef470ae.jpeg",
+      "title": "Target",
+      "isOpen": false,
+      "closedMessage": "Opens on Saturday",
+      "location": {
+        "address": {
+          "address1": "512 2nd Ave",
+          "aptOrSuite": null,
+          "city": "New York",
+          "country": "US",
+          "postalCode": "10016",
+          "region": "NY",
+          "title": null,
+          "uuid": "dbf9007d-11d7-4905-b00e-554957d3d4d6",
+          "eaterFormattedAddress": "512 2nd Ave, New York, NY 10016",
+          "subtitle": null,
+          "businessName": null,
+          "street": null,
+          "ugcAddressFieldInfo": null
+        },
+        "latitude": 40.7414793,
+        "longitude": -73.9780353,
+        "reference": null,
+        "type": null,
+        "placeReferences": null,
+        "interactionType": null,
+        "nickname": null
+      },
+      "storeStatus": {
+        "isActive": true,
+        "notActiveReason": "UNKNOWN"
+      },
+      "contact": {
+        "phoneNumber": "+16468224567"
+      },
+      "territoryUUID": "7c8239ee-388f-4a41-9b07-79115ea1323a",
+      "rating": null,
+      "slug": "target-kips-bay"
+    },
+    "courierInfo": {
+      "name": ""
+    },
+    "fareInfo": {
+      "totalPrice": 3654.9999999999995,
+      "checkoutInfo": [
+        {
+          "label": "delivery.uber.service_fee",
+          "type": "credit",
+          "rawValue": 0.1,
+          "key": "delivery.uber.service_fee",
+          "formattedValue": "$0.10"
+        },
+        {
+          "label": "Tax on Delivery Fees",
+          "type": "credit",
+          "rawValue": 0.73,
+          "key": "eats.mp.charges.bundled_delivery_fee_taxes",
+          "formattedValue": "$0.73"
+        },
+        {
+          "label": "Subtotal",
+          "type": "credit",
+          "rawValue": 25.18,
+          "key": "eats_fare.subtotal",
+          "formattedValue": "$25.18"
+        },
+        {
+          "label": "Tax",
+          "type": "credit",
+          "rawValue": 2.25,
+          "key": "eats.tax.base",
+          "formattedValue": "$2.25"
+        },
+        {
+          "label": "Delivery Fee",
+          "type": "credit",
+          "rawValue": 0.99,
+          "key": "eats.mp.charges.booking_fee",
+          "formattedValue": "$0.99"
+        },
+        {
+          "label": "Service Fee and Other Fees",
+          "type": "credit",
+          "rawValue": 7.3,
+          "key": "eats.mp.charges.basket_dependent_fee",
+          "formattedValue": "$7.30"
+        },
+        {
+          "label": "Total",
+          "type": "credit",
+          "rawValue": 36.55,
+          "key": "eats_fare.total",
+          "formattedValue": "$36.55"
+        }
+      ]
+    },
+    "ratingInfo": {
+      "isRatable": true,
+      "userRatings": []
+    },
+    "interactionType": "leave_at_door",
+    "deliveryAddress": null,
+    "customerInfos": {
+      "00000000-0000-4000-8000-000000000001": {
+        "uuid": "00000000-0000-4000-8000-000000000001",
+        "firstName": "Alex",
+        "lastName": "Alex",
+        "nickName": "alex@example.com",
+        "phone": "+15555550100",
+        "email": null
+      }
+    }
+  }
+}

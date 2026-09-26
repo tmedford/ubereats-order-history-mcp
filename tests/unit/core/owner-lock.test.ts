@@ -1,7 +1,7 @@
-import { mkdtempSync, rmSync, utimesSync, writeFileSync, existsSync } from "fs";
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, rmSync, statSync, utimesSync, writeFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
-import { OwnerLock, pidAlive } from "../../../src/core/shared-browser";
+import { ensurePrivateDir, OwnerLock, pidAlive } from "../../../src/core/shared-browser";
 
 let dir: string;
 let lockFile: string;
@@ -82,4 +82,32 @@ test("pidAlive", () => {
   expect(pidAlive(999999)).toBe(false);
   expect(pidAlive(-1)).toBe(false);
   expect(pidAlive(NaN)).toBe(false);
+});
+
+describe("private on-disk session", () => {
+  test("the lock file is owner-only", () => {
+    const l = new OwnerLock(lockFile, endpointFile);
+    expect(l.tryAcquire()).toBe(true);
+    expect(statSync(lockFile).mode & 0o777).toBe(0o600);
+    l.release();
+  });
+
+  test("the profile directory is created, and re-tightened, as 0700", () => {
+    const profile = join(dir, ".ubereats-order-history-mcp", "browser-data");
+    ensurePrivateDir(profile);
+    expect(statSync(profile).mode & 0o777).toBe(0o700);
+    chmodSync(profile, 0o755);
+    chmodSync(join(dir, ".ubereats-order-history-mcp"), 0o755);
+    ensurePrivateDir(profile);
+    expect(statSync(profile).mode & 0o777).toBe(0o700);
+    expect(statSync(join(dir, ".ubereats-order-history-mcp")).mode & 0o777).toBe(0o700);
+  });
+
+  test("a parent directory that is not the connector's is left alone", () => {
+    const shared = join(dir, "shared");
+    mkdirSync(shared, { mode: 0o755 });
+    chmodSync(shared, 0o755);
+    ensurePrivateDir(join(shared, "profile"));
+    expect(statSync(shared).mode & 0o777).toBe(0o755);
+  });
 });

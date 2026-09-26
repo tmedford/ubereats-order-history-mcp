@@ -1,4 +1,15 @@
-import { parseRpcResponse, RpcResponse, RpcTransport, UberEatsError, UberEatsRpc } from "../../../src/ubereats/rpc";
+import {
+  ALLOWED_OPERATIONS,
+  isAllowedRequestUrl,
+  parseRpcResponse,
+  RpcResponse,
+  RpcTransport,
+  sanitizeSnippet,
+  UberEatsError,
+  UberEatsRpc,
+} from "../../../src/ubereats/rpc";
+
+const OP = "getPastOrdersV1";
 
 const ok = (data: unknown): RpcResponse => ({ status: 200, text: JSON.stringify({ status: "success", data }) });
 const fail = (message: string, code: unknown = 3): RpcResponse => ({
@@ -58,26 +69,69 @@ describe("UberEatsRpc", () => {
 
   test("retries a bot challenge on a fresh page, then succeeds", async () => {
     const s = scripted([{ status: 403, text: "<html>challenge</html>" }, ok({ v: 1 })]);
-    await expect(new UberEatsRpc(s.t, opts).call("op", {})).resolves.toEqual({ v: 1 });
+    await expect(new UberEatsRpc(s.t, opts).call(OP, {})).resolves.toEqual({ v: 1 });
     expect(s.calls).toHaveLength(2);
     expect(s.resets()).toBe(1);
   });
 
   test("retries rate limits and transport failures with backoff", async () => {
     const s = scripted([{ status: 429, text: "" }, new Error("Target page closed"), ok("done")]);
-    await expect(new UberEatsRpc(s.t, opts).call("op", {})).resolves.toBe("done");
+    await expect(new UberEatsRpc(s.t, opts).call(OP, {})).resolves.toBe("done");
     expect(s.calls).toHaveLength(3);
   });
 
   test("does not retry a signed-out reply (the auth guard owns that)", async () => {
     const s = scripted([fail("missing user uuid")]);
-    await expect(new UberEatsRpc(s.t, opts).call("op", {})).rejects.toMatchObject({ code: "NOT_SIGNED_IN" });
+    await expect(new UberEatsRpc(s.t, opts).call(OP, {})).rejects.toMatchObject({ code: "NOT_SIGNED_IN" });
     expect(s.calls).toHaveLength(1);
   });
 
   test("gives up after the backoff list with the last error", async () => {
     const s = scripted([{ status: 502, text: "" }]);
-    await expect(new UberEatsRpc(s.t, opts).call("op", {})).rejects.toMatchObject({ code: "UPSTREAM_ERROR" });
+    await expect(new UberEatsRpc(s.t, opts).call(OP, {})).rejects.toMatchObject({ code: "UPSTREAM_ERROR" });
     expect(s.calls).toHaveLength(4);
+  });
+});
+
+describe("authorization boundaries", () => {
+  test("only the three read operations are allowed, and nothing is sent for anything else", async () => {
+    expect([...ALLOWED_OPERATIONS].sort()).toEqual(["getPastOrderV1", "getPastOrdersV1", "getReceiptByWorkflowUuidV1"]);
+    const s = scripted([ok({})]);
+    const rpc = new UberEatsRpc(s.t, { backoffMs: [], sleep: async () => undefined });
+    for (const op of ["createDraftOrderV2", "checkoutOrdersByDraftOrdersV1", "addTipV1", "getPastOrdersV1/../x", ""]) {
+      await expect(rpc.call(op, {})).rejects.toThrow(/read-only allowlist/);
+    }
+    expect(s.calls).toHaveLength(0);
+  });
+
+  test.each([
+    ["https://www.ubereats.com/robots.txt", true],
+    ["https://www.ubereats.com/_p/api/getPastOrdersV1", true],
+    ["https://ubereats.com/", true],
+    ["http://www.ubereats.com/", false], // never plaintext
+    ["https://www.ubereats.com.evil.io/", false],
+    ["https://evilubereats.com/", false],
+    ["https://analytics.google.com/g/collect", false],
+    ["https://auth.uber.com/login", false],
+    ["about:blank", false],
+    ["data:text/html,<script>1</script>", false],
+    ["not a url", false],
+  ])("automation page may load %s: %s", (url, allowed) => expect(isAllowedRequestUrl(url)).toBe(allowed));
+
+  test("error snippets strip token-shaped strings and are bounded", () => {
+    // assembled at runtime so the repo leak gate (scripts/check-leaks.mjs) never sees a JWT literal
+    const jwt = ["eyJ" + "hbGciOiJIUzI1NiJ9", "eyJ" + "zdWIiOiIxMjM0In0", "c2lnbmF0dXJlLXZhbHVlLWhlcmU"].join(".");
+    const out = sanitizeSnippet(`bad ${jwt} sid=${"a".repeat(64)} hash ${"f".repeat(40)} ${"x ".repeat(200)}`);
+    expect(out).not.toContain("eyJ");
+    expect(out).not.toMatch(/a{40}|f{32}/);
+    expect(out.length).toBeLessThanOrEqual(160);
+  });
+
+  test("API failure messages reaching the client are sanitized", () => {
+    try {
+      parseRpcResponse(OP, fail(`boom eyJa.eyJb.sig ${"z".repeat(50)}`));
+    } catch (e) {
+      expect((e as Error).message).not.toMatch(/eyJ|z{40}/);
+    }
   });
 });

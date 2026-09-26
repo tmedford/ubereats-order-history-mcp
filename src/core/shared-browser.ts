@@ -18,7 +18,7 @@
  */
 
 import { chromium, Browser, BrowserContext, Page } from "playwright-core";
-import { readFileSync, statSync, unlinkSync, utimesSync, writeFileSync, mkdirSync } from "fs";
+import { chmodSync, readFileSync, statSync, unlinkSync, utimesSync, writeFileSync, mkdirSync } from "fs";
 import { dirname, join } from "path";
 
 export interface SharedBrowserOptions {
@@ -87,8 +87,8 @@ export class OwnerLock {
 
   tryAcquire(): boolean {
     try {
-      mkdirSync(dirname(this.lockFile), { recursive: true });
-      writeFileSync(this.lockFile, String(process.pid), { flag: "wx" });
+      mkdirSync(dirname(this.lockFile), { recursive: true, mode: 0o700 });
+      writeFileSync(this.lockFile, String(process.pid), { flag: "wx", mode: 0o600 });
       this.held = true;
       this.startHeartbeat();
       return true;
@@ -142,6 +142,22 @@ export class OwnerLock {
     } catch {
       /* someone else already cleaned it */
     }
+  }
+}
+
+/**
+ * The connector's profile holds the imported Uber session cookies on disk: owner-only,
+ * like Chrome's own profile. Tightened on every launch in case it was created looser.
+ */
+export function ensurePrivateDir(dir: string): void {
+  mkdirSync(dir, { recursive: true, mode: 0o700 });
+  chmodSync(dir, 0o700);
+  const parent = dirname(dir);
+  try {
+    if ((statSync(parent).mode & 0o077) !== 0 && parent.endsWith(".ubereats-order-history-mcp"))
+      chmodSync(parent, 0o700);
+  } catch {
+    /* parent not ours - leave it */
   }
 }
 
@@ -228,7 +244,7 @@ export class SharedBrowser {
       }
       if (this.lock.tryAcquire()) {
         try {
-          mkdirSync(this.opts.dataDir, { recursive: true });
+          ensurePrivateDir(this.opts.dataDir);
           const context = await chromium.launchPersistentContext(this.opts.dataDir, {
             headless: this.opts.headless,
             ...(this.opts.executablePath ? { executablePath: this.opts.executablePath } : { channel: "chrome" }),

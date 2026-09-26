@@ -36,6 +36,37 @@ export interface RpcTransport {
 export type UberEatsErrorCode =
   "NOT_SIGNED_IN" | "BOT_CHALLENGE" | "RATE_LIMITED" | "UPSTREAM_ERROR" | "CSRF_REJECTED" | "API_ERROR";
 
+/**
+ * THE ONLY OPERATIONS THIS SERVER MAY EVER CALL - all reads. Enforced in UberEatsRpc before
+ * any request is made, so a bug or a crafted tool argument cannot reach an Uber Eats
+ * operation that changes state (orders, carts, tips, ratings, payment methods).
+ */
+export const ALLOWED_OPERATIONS: ReadonlySet<string> = new Set([
+  "getPastOrdersV1",
+  "getPastOrderV1",
+  "getReceiptByWorkflowUuidV1",
+]);
+
+/** Origins the automation page may talk to; everything else is aborted. */
+export function isAllowedRequestUrl(url: string): boolean {
+  try {
+    const u = new URL(url);
+    return u.protocol === "https:" && (u.hostname === "ubereats.com" || u.hostname.endsWith(".ubereats.com"));
+  } catch {
+    return false;
+  }
+}
+
+/** Keep error text short and free of anything token-shaped before it reaches a client. */
+export function sanitizeSnippet(text: string, max = 160): string {
+  return text
+    .replace(/eyJ[\w-]+\.[\w-]+\.[\w-]+/g, "<jwt>")
+    .replace(/\b[A-Fa-f0-9]{32,}\b/g, "<hex>")
+    .replace(/[\w-]{40,}/g, "<token>")
+    .replace(/\s+/g, " ")
+    .slice(0, max);
+}
+
 export class UberEatsError extends Error {
   constructor(
     readonly code: UberEatsErrorCode,
@@ -62,7 +93,7 @@ export function parseRpcResponse(operation: string, res: RpcResponse): unknown {
     throw new UberEatsError("RATE_LIMITED", `${operation}: rate limited (HTTP 429)`, true, operation);
   }
   if (res.status === 403 && /csrf/i.test(text)) {
-    throw new UberEatsError("CSRF_REJECTED", `${operation}: ${text.slice(0, 120)}`, false, operation);
+    throw new UberEatsError("CSRF_REJECTED", `${operation}: ${sanitizeSnippet(text, 120)}`, false, operation);
   }
   if (text.trimStart().startsWith("<")) {
     // An HTML body on an RPC route is Cloudflare's challenge/block page, not an answer.
@@ -82,13 +113,13 @@ export function parseRpcResponse(operation: string, res: RpcResponse): unknown {
   } catch {
     throw new UberEatsError(
       "UPSTREAM_ERROR",
-      `${operation}: unparseable response (HTTP ${res.status}): ${text.slice(0, 120)}`,
+      `${operation}: unparseable response (HTTP ${res.status}): ${sanitizeSnippet(text, 120)}`,
       true,
       operation,
     );
   }
   if (json.status === "success") return json.data ?? {};
-  const message = String(json.data?.message ?? `HTTP ${res.status}`);
+  const message = sanitizeSnippet(String(json.data?.message ?? `HTTP ${res.status}`), 300);
   if (SIGNED_OUT.test(message)) {
     throw new UberEatsError("NOT_SIGNED_IN", `${operation}: ${message}`, false, operation);
   }
@@ -112,6 +143,15 @@ export class UberEatsRpc {
   ) {}
 
   call<T = unknown>(operation: string, body: unknown): Promise<T> {
+    if (!ALLOWED_OPERATIONS.has(operation)) {
+      return Promise.reject(
+        new UberEatsError(
+          "API_ERROR",
+          `operation ${JSON.stringify(operation)} is not on the read-only allowlist`,
+          false,
+        ),
+      );
+    }
     return withRetry(async () => parseRpcResponse(operation, await this.postSafely(operation, body)) as T, {
       backoffMs: this.opts.backoffMs ?? [500, 2_000, 5_000],
       sleep: this.opts.sleep ?? defaultSleep,
@@ -131,7 +171,7 @@ export class UberEatsRpc {
       await this.transport.reset?.().catch(() => undefined);
       throw new UberEatsError(
         "UPSTREAM_ERROR",
-        `${operation}: transport failed: ${e instanceof Error ? e.message : String(e)}`,
+        `${operation}: transport failed: ${sanitizeSnippet(e instanceof Error ? e.message : String(e))}`,
         true,
         operation,
       );
@@ -191,10 +231,14 @@ export class PageTransport implements RpcTransport {
   private async warm(): Promise<Page> {
     const page = await this.browser.newPage();
     try {
+      // This page carries the user's session: it may talk to Uber Eats and nothing else
+      // (no third-party trackers, no redirects off-origin).
+      await page.route("**/*", (route) =>
+        isAllowedRequestUrl(route.request().url()) ? route.continue() : route.abort("blockedbyclient"),
+      );
       await page.goto(`${this.origin}/robots.txt`, { waitUntil: "domcontentloaded", timeout: 30_000 });
-      if (!page.url().startsWith(this.origin)) {
-        // redirected off-origin (unexpected) - fall back to the home page
-        await page.goto(this.origin, { waitUntil: "domcontentloaded", timeout: 30_000 });
+      if (!isAllowedRequestUrl(page.url())) {
+        throw new UberEatsError("UPSTREAM_ERROR", "the Uber Eats origin redirected off-site; refusing to use it", true);
       }
     } catch (e) {
       await page.close().catch(() => undefined);

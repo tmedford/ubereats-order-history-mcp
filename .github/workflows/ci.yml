@@ -9,6 +9,13 @@ permissions:
   contents: read
 
 jobs:
+  leaks:
+    # personal data / credentials must never land in this public repo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node scripts/check-leaks.mjs
+
   test:
     runs-on: ${{ matrix.os }}
     strategy:

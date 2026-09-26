@@ -4,7 +4,7 @@
  * the three read RPCs in ubereats/client.ts.
  */
 
-import { writeFileSync, mkdirSync } from "fs";
+import { chmodSync, writeFileSync, mkdirSync } from "fs";
 import { homedir } from "os";
 import { dirname, join, resolve } from "path";
 import type { UberEatsClient } from "../ubereats/client";
@@ -245,6 +245,7 @@ export async function handleTool(
           : join(homedir(), "Downloads", `ubereats-${kind}-${startDate ?? "all"}-to-${endDate ?? "now"}.csv`);
       mkdirSync(dirname(out), { recursive: true });
       writeFileSync(out, csv, { mode: 0o600 });
+      chmodSync(out, 0o600); // mode only applies on create; an overwritten file keeps its old one
       return { status: "success", kind, path: out, rows };
     }
 

@@ -24,7 +24,8 @@
     "test:e2e": "npm run build && node scripts/e2e.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src tests --ext .ts",
-    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "check:leaks": "node scripts/check-leaks.mjs"
   },
   "keywords": [
     "mcp",

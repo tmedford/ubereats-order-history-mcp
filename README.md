@@ -114,11 +114,17 @@ No browser download is needed: `playwright-core` drives your installed Chrome.
 
 ## Privacy and security
 
-- **Read-only by construction.** The only Uber operations in the code are the three read RPCs above.
-- **Nothing leaves your machine.** No telemetry and no third-party calls. Requests go from your own Chrome to ubereats.com.
-- **Cookies**: only `ubereats.com` / `uber.com` cookies are decrypted (Chrome's master key is held in memory for one import only). They are then written into the connector's own **persistent** browser profile, `UBEREATS_ORDERS_BROWSER_DATA_DIR` (default `~/.ubereats-order-history-mcp/browser-data`), so the session stays on disk after the server stops, like any browser profile. Delete that directory to remove it; Chrome's own session is untouched. Values are never logged. Chrome's app-bound (`v20`) cookie encryption is refused, not bypassed.
-- **The debugging port** is random, bound to `127.0.0.1`, and only attached to via the owning profile's `DevToolsActivePort` while the owner process is alive.
-- Test fixtures are real responses **scrubbed** by `scripts/scrub-fixtures.mjs`: names, email, phone, addresses, courier names, user ids, URLs and card digits are removed, and the script fails if any known value survives.
+Enforced in code, and each point is covered by tests:
+
+- **Read-only allowlist.** `ALLOWED_OPERATIONS` in `src/ubereats/rpc.ts` holds the only three operations the server can call: `getPastOrdersV1`, `getPastOrderV1` and `getReceiptByWorkflowUuidV1`. Any other name is refused before a request is made, so nothing can order, tip, rate, cancel or pay.
+- **The session never leaves Uber Eats.** The automation page aborts every request that isn't `https://*.ubereats.com`: no trackers, no plaintext, no redirects off-site. There is no telemetry and there are no third-party calls.
+- **Cookies**: only `ubereats.com` / `uber.com` cookies are decrypted; Chrome's master key is held in memory for one import only. They are then written into the connector's own **persistent** browser profile, `UBEREATS_ORDERS_BROWSER_DATA_DIR` (default `~/.ubereats-order-history-mcp/browser-data`, forced to `0700`), so the session stays on disk after the server stops, like any browser profile. Delete that directory to remove it; Chrome's own session is untouched. Cookie values are never logged. Chrome's app-bound (`v20`) cookie encryption is refused, not bypassed.
+- **Errors are sanitized.** Anything token-shaped (JWTs, long hex or base64 strings) is stripped from error text before it reaches the client, and error snippets are length-capped.
+- **The debugging port** is random, bound to `127.0.0.1`, and attached to only through the owning profile's `DevToolsActivePort` while the owner process is alive. Like any local browser, other programs running as *your* user could reach it while it's open; it's never exposed to the network.
+- **Exports** are written `0600` (re-applied when overwriting), with formula-injection protection.
+- **No personal data in the repo.** Fixtures are real responses scrubbed by `scripts/scrub-fixtures.mjs`, which fails if a known value survives. On top of that, `scripts/check-leaks.mjs` runs in CI on every push and PR and fails the build on any email, phone number, non-placeholder card number, JWT, session cookie, token or receipt name in any tracked file. `captures/` (raw data from your account) is gitignored.
+
+Found a security issue? See [SECURITY.md](SECURITY.md).
 
 ## Limits
 
@@ -131,7 +137,7 @@ No browser download is needed: `playwright-core` drives your installed Chrome.
 
 ```bash
 npm test                 # unit tests (fixtures, no network)
-npm run lint && npm run typecheck
+npm run lint && npm run typecheck && npm run check:leaks
 npm run test:e2e         # END-TO-END against your real account through the MCP protocol
 ```
 

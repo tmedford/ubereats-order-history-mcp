@@ -6,7 +6,7 @@
 
 import type { SignInCheck } from "../core/auth-guard";
 import { mapLimit } from "../core/retry";
-import { EatsOrder, parseOrder, parseOrdersPage, round2 } from "./orders";
+import { EatsOrder, normalizeName, parseOrder, parseOrdersPage, round2 } from "./orders";
 import { EatsReceipt, parseReceiptHtml } from "./receipt";
 import { UberEatsError, UberEatsRpc } from "./rpc";
 
@@ -36,7 +36,20 @@ export interface ListOrdersOptions {
   endDate?: string;
   /** Safety cap on pages (10 orders each). */
   maxPages?: number;
+  /** Only orders whose store name contains this (case- and symbol-insensitive). */
+  store?: string;
   onPage?(page: number, ordersSoFar: number): void;
+}
+
+/**
+ * Case-, mark- and punctuation-insensitive "name contains". A query with nothing searchable
+ * left after normalising (e.g. only punctuation) matches NOTHING - never every order.
+ * The tool layer rejects such a query up front; this is the backstop.
+ */
+export function storeMatches(order: EatsOrder, query: string | undefined): boolean {
+  if (query === undefined || query === "") return true;
+  const q = normalizeName(query);
+  return q !== "" && normalizeName(order.store.name).includes(q);
 }
 
 export interface ListOrdersResult {
@@ -46,6 +59,35 @@ export interface ListOrdersResult {
   truncated: boolean;
   /** Oldest order date seen (YYYY-MM-DD) - how far back the walk actually reached. */
   oldestSeen: string | null;
+  /** True when the walk reached the END of the history Uber Eats serves (no older orders exist). */
+  reachedEnd: boolean;
+}
+
+/**
+ * Uber Eats' website serves a bounded history (about two years). When the walk reached its
+ * end and the caller asked for dates before it, say so - an empty answer for 2023 must not
+ * read as "no orders in 2023".
+ */
+export function historyWarning(
+  res: { reachedEnd: boolean; oldestSeen: string | null },
+  startDate?: string,
+  /** Where the ORDER search actually started (transactions look back before startDate). */
+  searchStart = startDate,
+): string | null {
+  if (!res.reachedEnd || !res.oldestSeen) return null;
+  if (startDate && startDate < res.oldestSeen) {
+    return (
+      `Uber Eats serves order history back to ${res.oldestSeen} only; nothing before that date can be read ` +
+      `here (Uber's data download at help.uber.com covers older orders).`
+    );
+  }
+  if (searchStart && searchStart < res.oldestSeen) {
+    return (
+      `Lookback incomplete: charges in this range from orders placed before ${res.oldestSeen} (a late tip or ` +
+      `refund) cannot be read - Uber Eats' history starts there.`
+    );
+  }
+  return null;
 }
 
 export interface EatsTransaction {
@@ -124,6 +166,7 @@ export class UberEatsClient {
           continue;
         }
         if (opts.endDate && date && date > opts.endDate) continue;
+        if (!storeMatches(o, opts.store)) continue;
         orders.push(o);
       }
       if (!page.hasMore || fresh === 0 || page.ids.length === 0) {
@@ -135,7 +178,7 @@ export class UberEatsClient {
     }
     const truncated =
       !reachedEnd && pages >= maxPages && !(opts.startDate && oldestSeen && oldestSeen < opts.startDate);
-    return { orders, pages, truncated, oldestSeen };
+    return { orders, pages, truncated, oldestSeen, reachedEnd };
   }
 
   async getOrder(orderId: string): Promise<EatsOrder> {
@@ -174,6 +217,8 @@ export class UberEatsClient {
     ordersScanned: number;
     pages: number;
     truncated: boolean;
+    reachedEnd: boolean;
+    oldestSeen: string | null;
     receiptErrors: { orderId: string; error: string }[];
   }> {
     const lookback = opts.lookbackDays ?? 7;
@@ -207,6 +252,8 @@ export class UberEatsClient {
       ordersScanned: search.orders.length,
       pages: search.pages,
       truncated: search.truncated,
+      reachedEnd: search.reachedEnd,
+      oldestSeen: search.oldestSeen,
       receiptErrors,
     };
   }

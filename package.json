@@ -1,6 +1,6 @@
 {
   "name": "ubereats-order-history-mcp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Read-only MCP server for your Uber Eats order history: orders, line items, fees, tips and the card behind every charge - straight from Uber Eats' own data feeds, signed in with the session your Chrome already has.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

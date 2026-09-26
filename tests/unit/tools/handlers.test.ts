@@ -16,7 +16,7 @@ const txns = toTransactions(orders[3], split);
 const client = {
   timeZone: "UTC",
   checkSignedIn: async () => ({ authenticated: true }),
-  listOrders: jest.fn(async () => ({ orders, pages: 1, truncated: false, oldestSeen: "2026-04-16" })),
+  listOrders: jest.fn(async () => ({ orders, pages: 1, truncated: false, oldestSeen: "2026-04-16", reachedEnd: true })),
   receiptsFor: jest.fn(async (ids: string[]) =>
     ids.map((id) => (id === orders[3].id ? split : { orderId: id, error: "boom" })),
   ),
@@ -27,6 +27,8 @@ const client = {
     ordersScanned: 1,
     pages: 1,
     truncated: false,
+    reachedEnd: true,
+    oldestSeen: "2026-04-16",
     receiptErrors: [],
   })),
 } as unknown as UberEatsClient;
@@ -56,6 +58,51 @@ describe("input validation", () => {
     ).rejects.toThrow(InputError);
     await expect(handleTool("get_ubereats_transactions", {}, client)).rejects.toThrow(/required/);
     await expect(handleTool("nope", {}, client)).rejects.toThrow(InputError);
+  });
+});
+
+describe("store filter and history warning through the tools", () => {
+  test("store is passed through to orders, transactions and export", async () => {
+    await handleTool("get_ubereats_orders", { store: "home depot" }, client);
+    expect((client.listOrders as jest.Mock).mock.calls.at(-1)[0]).toMatchObject({ store: "home depot" });
+    await handleTool("get_ubereats_transactions", { start_date: "2026-06-24", store: "target" }, client);
+    expect((client.listTransactions as jest.Mock).mock.calls.at(-1)[0]).toMatchObject({ store: "target" });
+  });
+  test("a store query with nothing searchable is rejected, not treated as 'all stores'", async () => {
+    await expect(handleTool("get_ubereats_orders", { store: "!!!" }, client)).rejects.toThrow(/letters or digits/);
+    await expect(handleTool("get_ubereats_orders", { store: "寿司" }, client)).resolves.toMatchObject({
+      status: "success",
+    });
+  });
+
+  test("transactions warn when the lookback reaches before the served history", async () => {
+    const r: any = await handleTool("get_ubereats_transactions", { start_date: "2026-04-20" }, client);
+    expect(r.warning).toMatch(/Lookback incomplete/);
+  });
+
+  test("CSV exports carry the history warning too", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "ue-csvw-"));
+    try {
+      const r: any = await handleTool(
+        "export_ubereats_csv",
+        { kind: "orders", start_date: "2023-01-01", output_path: join(dir, "o.csv") },
+        client,
+      );
+      expect(r.warning).toMatch(/back to 2026-04-16 only/);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  test("an invalid store is rejected", async () => {
+    await expect(handleTool("get_ubereats_orders", { store: 5 }, client)).rejects.toThrow(InputError);
+    await expect(handleTool("get_ubereats_orders", { store: "x".repeat(81) }, client)).rejects.toThrow(InputError);
+  });
+  test("start_date before the served history returns a warning naming where it starts", async () => {
+    const r: any = await handleTool("get_ubereats_orders", { start_date: "2023-01-01" }, client);
+    expect(r.warning).toMatch(/back to 2026-04-16 only/);
+    const inside: any = await handleTool("get_ubereats_orders", { start_date: "2026-05-01" }, client);
+    expect(inside.warning).toBeUndefined();
   });
 });
 

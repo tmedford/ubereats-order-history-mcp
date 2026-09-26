@@ -139,6 +139,29 @@ async function main() {
       "a separately billed tip is recognised",
     );
 
+  console.log("4b. lookup by store name, and the history floor");
+  // pick a store this account really has, so an empty result cannot pass as "filtered"
+  const pickStore = all[0]?.store?.name ?? newest.store.name;
+  const word = pickStore.split(/[^\p{L}\p{N}]+/u).find((w) => w.length >= 3) ?? pickStore;
+  const hd = await a.call("get_ubereats_orders", { store: word, start_date: start, end_date: end });
+  const hdStores = new Set(hd.payload.orders.map((o) => o.store.name));
+  ok(
+    !hd.isError &&
+      hd.payload.orderCount > 0 &&
+      hdStores.has(pickStore) &&
+      [...hdStores].every((n) => n.toLowerCase().includes(word.toLowerCase())),
+    `store filter "${word}": ${hd.payload.orderCount} orders, all from matching stores (${[...hdStores].join(", ")})`,
+  );
+  const old = await a.call("get_ubereats_orders", {
+    start_date: "2015-01-01",
+    end_date: "2015-12-31",
+    include_items: false,
+  });
+  ok(
+    old.payload.orderCount === 0 && /serves order history back to/.test(old.payload.warning ?? ""),
+    `pre-history window warns: ${old.payload.warning?.slice(0, 60)}...`,
+  );
+
   console.log("5. CSV export");
   const dir = mkdtempSync(join(tmpdir(), "ue-e2e-"));
   const csv = await a.call("export_ubereats_csv", {

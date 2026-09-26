@@ -1,8 +1,8 @@
-import { mkdtempSync, readFileSync, rmSync, statSync } from "fs";
+import { chmodSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
 import { csvCell, itemsCsv, ordersCsv, transactionsCsv } from "../../../src/tools/csv";
-import { handleTool, InputError, optDate, TOOLS } from "../../../src/tools/handlers";
+import { handleTool, InputError, optDate, TOOLS, writePrivateFile } from "../../../src/tools/handlers";
 import type { UberEatsClient } from "../../../src/ubereats/client";
 import { toTransactions } from "../../../src/ubereats/client";
 import { parseOrdersPage } from "../../../src/ubereats/orders";
@@ -107,6 +107,25 @@ describe("handlers", () => {
         client,
       );
       expect(items.rows).toBe(orders.reduce((s, o) => s + o.items.length, 0));
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("writePrivateFile", () => {
+  test("replacing an existing world-readable file never exposes data under the old mode", () => {
+    const dir = mkdtempSync(join(tmpdir(), "ue-private-"));
+    try {
+      const out = join(dir, "export.csv");
+      writeFileSync(out, "old");
+      chmodSync(out, 0o644);
+      const oldInode = statSync(out).ino;
+      writePrivateFile(out, "new,data\n");
+      expect(readFileSync(out, "utf8")).toBe("new,data\n");
+      expect(statSync(out).mode & 0o777).toBe(0o600);
+      expect(statSync(out).ino).not.toBe(oldInode); // a new 0600 file was renamed in; the 0644 one never held the data
+      expect(readdirSync(dir)).toEqual(["export.csv"]); // no temp file left behind
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

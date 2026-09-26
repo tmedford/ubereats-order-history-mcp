@@ -4,7 +4,8 @@
  * the three read RPCs in ubereats/client.ts.
  */
 
-import { chmodSync, writeFileSync, mkdirSync } from "fs";
+import { mkdirSync, renameSync, rmSync, writeFileSync } from "fs";
+import { randomBytes } from "crypto";
 import { homedir } from "os";
 import { dirname, join, resolve } from "path";
 import type { UberEatsClient } from "../ubereats/client";
@@ -92,6 +93,24 @@ export const TOOLS = [
 ] as const;
 
 export class InputError extends Error {}
+
+/**
+ * Write `data` so it is never readable by anyone else, even for an instant: it goes to a
+ * fresh 0600 temp file in the same directory (created exclusively), which is then renamed
+ * over the destination. Overwriting an existing 0644 file therefore never exposes the new
+ * data under the old permissions.
+ */
+export function writePrivateFile(path: string, data: string): void {
+  mkdirSync(dirname(path), { recursive: true });
+  const tmp = `${path}.${process.pid}.${randomBytes(6).toString("hex")}.tmp`;
+  try {
+    writeFileSync(tmp, data, { mode: 0o600, flag: "wx" });
+    renameSync(tmp, path);
+  } catch (e) {
+    rmSync(tmp, { force: true });
+    throw e;
+  }
+}
 
 type Args = Record<string, unknown>;
 
@@ -243,9 +262,7 @@ export async function handleTool(
         typeof args.output_path === "string" && args.output_path
           ? resolve(args.output_path.replace(/^~(?=$|\/)/, homedir()))
           : join(homedir(), "Downloads", `ubereats-${kind}-${startDate ?? "all"}-to-${endDate ?? "now"}.csv`);
-      mkdirSync(dirname(out), { recursive: true });
-      writeFileSync(out, csv, { mode: 0o600 });
-      chmodSync(out, 0o600); // mode only applies on create; an overwritten file keeps its old one
+      writePrivateFile(out, csv);
       return { status: "success", kind, path: out, rows };
     }
 

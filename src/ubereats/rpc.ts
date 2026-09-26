@@ -67,6 +67,13 @@ export function sanitizeSnippet(text: string, max = 160): string {
     .slice(0, max);
 }
 
+/** An upstream error code is shown only when it is a short, plain identifier. */
+function safeCode(code: unknown): string {
+  if (code === undefined || code === null) return "";
+  const c = String(code);
+  return /^[\w.-]{1,32}$/.test(c) ? ` (code ${c})` : "";
+}
+
 export class UberEatsError extends Error {
   constructor(
     readonly code: UberEatsErrorCode,
@@ -125,7 +132,7 @@ export function parseRpcResponse(operation: string, res: RpcResponse): unknown {
   }
   throw new UberEatsError(
     "API_ERROR",
-    `${operation} failed: ${message}${json.data?.code !== undefined ? ` (code ${String(json.data.code)})` : ""}`,
+    sanitizeSnippet(`${operation} failed: ${message}${safeCode(json.data?.code)}`, 360),
     false,
     operation,
   );

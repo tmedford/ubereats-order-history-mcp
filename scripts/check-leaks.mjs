@@ -12,9 +12,9 @@ import { readFileSync } from "fs";
 
 const files = execFileSync("git", ["ls-files"], { encoding: "utf8" })
   .split("\n")
-  .filter((f) => f && !/^package-lock\.json$|\.(png|jpg|ico)$/.test(f));
+  .filter((f) => f && !/\.(png|jpg|jpeg|gif|ico)$/i.test(f)); // the lockfile IS scanned (tokens in registry URLs)
 
-const ALLOWED_EMAILS = /@(example\.com|users\.noreply\.github\.com|anthropic\.com)$/i;
+const ALLOWED_EMAILS = /@(example\.com|users\.noreply\.github\.com)$/i;
 const RULES = [
   {
     name: "email address",
@@ -31,9 +31,20 @@ const RULES = [
     re: /(?:••••|\*{4}|x{4}|ending in )\s?(\d{4})/gi,
     ok: (m) => /(\d)\1{3}$/.test(m) || /1234|5678|0000/.test(m),
   },
-  { name: "JWT", re: /eyJ[\w-]{10,}\.eyJ[\w-]{10,}\.[\w-]{10,}/g, ok: () => false },
-  { name: "session cookie value", re: /\b(sid|jwt-session|csid)=[\w.%-]{16,}/g, ok: () => false },
-  { name: "GitHub/API token", re: /\b(ghp|gho|ghs|github_pat|sk-ant|sk)_[A-Za-z0-9_]{20,}/g, ok: () => false },
+  {
+    name: "credentials in a URL",
+    re: /(?:https?:)?\/\/[^\s/"'@:]+:[^\s/"'@]+@[\w.-]+|_auth(?:Token)?\s*[=:]\s*["']?[\w+/=.-]{8,}/g,
+    ok: () => false,
+    credential: true,
+  },
+  { name: "JWT", re: /eyJ[\w-]{10,}\.eyJ[\w-]{10,}\.[\w-]{10,}/g, ok: () => false, credential: true },
+  { name: "session cookie value", re: /\b(sid|jwt-session|csid)=[\w.%-]{16,}/g, ok: () => false, credential: true },
+  {
+    name: "GitHub/API token",
+    re: /\b(ghp|gho|ghs|github_pat|sk-ant|sk|npm)_[A-Za-z0-9_]{20,}/g,
+    ok: () => false,
+    credential: true,
+  },
   {
     name: "non-placeholder person on a receipt",
     re: /(Thanks for (?:ordering|tipping), |(?:Delivered|Picked up) by )([A-Z][A-Za-z'-]+)/g,
@@ -50,7 +61,10 @@ for (const f of files) {
     continue;
   }
   if (f === "scripts/check-leaks.mjs") continue; // this file describes the patterns
-  for (const rule of RULES) {
+  // The lockfile lists public package metadata (maintainer emails etc.): only the
+  // credential rules apply there - a token in a registry URL is exactly what to catch.
+  const rules = f === "package-lock.json" ? RULES.filter((r) => r.credential) : RULES;
+  for (const rule of rules) {
     for (const m of text.matchAll(rule.re)) {
       if (rule.ok(m[0])) continue;
       bad++;

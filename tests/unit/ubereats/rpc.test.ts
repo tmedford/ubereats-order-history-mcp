@@ -127,6 +127,22 @@ describe("authorization boundaries", () => {
     expect(out.length).toBeLessThanOrEqual(160);
   });
 
+  test("an upstream error code is shown only when short and plain", () => {
+    const msg = (c: unknown) => {
+      try {
+        parseRpcResponse(OP, fail("nope", c));
+      } catch (e) {
+        return (e as Error).message;
+      }
+      return "";
+    };
+    expect(msg("400")).toMatch(/\(code 400\)$/);
+    expect(msg(3)).toMatch(/\(code 3\)$/);
+    const token = "t0k" + "e".repeat(60);
+    expect(msg(token)).not.toContain(token);
+    expect(msg({ secret: "x" })).not.toMatch(/code/);
+  });
+
   test("API failure messages reaching the client are sanitized", () => {
     try {
       parseRpcResponse(OP, fail(`boom eyJa.eyJb.sig ${"z".repeat(50)}`));

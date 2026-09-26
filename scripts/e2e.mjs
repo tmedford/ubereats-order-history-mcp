@@ -139,6 +139,22 @@ async function main() {
       "a separately billed tip is recognised",
     );
 
+  console.log("4b. lookup by store name, and the history floor");
+  const hd = await a.call("get_ubereats_orders", { store: "home depot", start_date: daysAgo(400) });
+  ok(
+    !hd.isError && hd.payload.orders.every((o) => /home depot/i.test(o.store.name)),
+    `store filter: ${hd.payload.orderCount} Home Depot orders, no others`,
+  );
+  const old = await a.call("get_ubereats_orders", {
+    start_date: "2015-01-01",
+    end_date: "2015-12-31",
+    include_items: false,
+  });
+  ok(
+    old.payload.orderCount === 0 && /serves order history back to/.test(old.payload.warning ?? ""),
+    `pre-history window warns: ${old.payload.warning?.slice(0, 60)}...`,
+  );
+
   console.log("5. CSV export");
   const dir = mkdtempSync(join(tmpdir(), "ue-e2e-"));
   const csv = await a.call("export_ubereats_csv", {

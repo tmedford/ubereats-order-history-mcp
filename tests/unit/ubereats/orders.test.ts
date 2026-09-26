@@ -82,6 +82,25 @@ describe("parseOrdersPage (real, scrubbed getPastOrdersV1 page)", () => {
     expect(fixed.itemsMatchSubtotal).toBe(true);
   });
 
+  test("legacy receipt lines (no ids) join by title and quantity, each used once", () => {
+    const o = page.orders[2]; // the Happy Meal order
+    const fixed = withReceiptLineTotals(o, [
+      { id: "legacy-0", title: "Hamburger Happy Meal", quantity: 2, amount: 16.18 },
+      { id: "legacy-1", title: "10 pc. Chicken McNuggets®", quantity: 1, amount: 7.49 },
+    ]);
+    expect(fixed.items.map((i) => [i.lineTotal, i.lineTotalSource])).toEqual([
+      [16.18, "receipt"],
+      [7.49, "receipt"],
+    ]);
+    expect(fixed.itemsMatchSubtotal).toBe(true);
+  });
+
+  test("a legacy line whose title or quantity differs is not applied", () => {
+    const o = page.orders[2];
+    const fixed = withReceiptLineTotals(o, [{ id: "legacy-0", title: "Hamburger Happy Meal", quantity: 3, amount: 1 }]);
+    expect(fixed.items[0].lineTotalSource).toBe("computed");
+  });
+
   test("receipts with no printed line amounts leave the order unchanged", () => {
     const o = page.orders[0];
     expect(withReceiptLineTotals(o, [{ id: o.items[0].id, amount: null }])).toBe(o);

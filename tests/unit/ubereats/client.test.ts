@@ -1,6 +1,14 @@
 import { readFileSync } from "fs";
 import { join } from "path";
-import { addDays, localDate, OPS, toTransactions, UberEatsClient } from "../../../src/ubereats/client";
+import {
+  addDays,
+  historyWarning,
+  localDate,
+  normalizeStoreName,
+  OPS,
+  toTransactions,
+  UberEatsClient,
+} from "../../../src/ubereats/client";
 import { parseOrdersPage } from "../../../src/ubereats/orders";
 import { parseReceiptHtml } from "../../../src/ubereats/receipt";
 import { UberEatsError, UberEatsRpc } from "../../../src/ubereats/rpc";
@@ -94,6 +102,50 @@ describe("listOrders paging", () => {
     const res = await new UberEatsClient(stuck, "UTC").listOrders({ maxPages: 50 });
     expect(res.orders).toHaveLength(1);
     expect(res.pages).toBe(2);
+  });
+});
+
+describe("store filter and history bounds", () => {
+  const named = (id: string, created: string, store: string) => {
+    const o = order(id, created);
+    o.storeInfo.title = store;
+    return o;
+  };
+  const history = [
+    [named("a", "2026-09-20T15:00:00Z", "McDonald's®"), named("b", "2026-09-10T15:00:00Z", "The Home Depot")],
+    [named("c", "2026-08-30T15:00:00Z", "the home depot"), named("d", "2026-08-20T15:00:00Z", "Target")],
+  ];
+
+  test.each([
+    ["home depot", ["b", "c"]],
+    ["HOME-DEPOT", ["b", "c"]],
+    ["mcdonalds", ["a"]],
+    ["McDonald's", ["a"]],
+    ["nobody", []],
+    ["", ["a", "b", "c", "d"]],
+  ])("store %j", async (q, ids) => {
+    const res = await new UberEatsClient(fakeRpc(history).rpc, "UTC").listOrders({ store: q });
+    expect(res.orders.map((o) => o.id)).toEqual(ids);
+  });
+
+  test("store + date window together, and only matching orders get a receipt request", async () => {
+    const f = fakeRpc(history, {});
+    const res = await new UberEatsClient(f.rpc, "UTC").listTransactions({ startDate: "2026-08-25", store: "depot" });
+    expect(res.receiptErrors.map((e) => e.orderId)).toEqual(["b", "c"]);
+    expect(f.calls.filter((c) => c.op === OPS.receipt).map((c) => c.body.workflowUuid)).toEqual(["b", "c"]);
+  });
+
+  test("normalizeStoreName drops case, marks and punctuation", () => {
+    expect(normalizeStoreName("McDonald's® (Decatur-Clairmnt)")).toBe("mcdonalds decatur clairmnt");
+  });
+
+  test("asking for dates before the served history says so; inside it, it does not", async () => {
+    const res = await new UberEatsClient(fakeRpc(history).rpc, "UTC").listOrders({ startDate: "2023-01-01" });
+    expect(res).toMatchObject({ reachedEnd: true, oldestSeen: "2026-08-20" });
+    expect(historyWarning(res, "2023-01-01")).toMatch(/back to 2026-08-20 only/);
+    expect(historyWarning(res, "2026-08-21")).toBeNull();
+    expect(historyWarning({ reachedEnd: false, oldestSeen: "2026-08-20" }, "2023-01-01")).toBeNull();
+    expect(historyWarning(res, undefined)).toBeNull();
   });
 });
 

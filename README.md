@@ -33,6 +33,7 @@ Claude ──stdio──> ubereats-order-history-mcp
                               POST /_p/api/getReceiptByWorkflowUuidV1 the receipt
 ```
 
+- **Two receipt layouts.** Receipts from about Sep 2025 carry `data-testid` hooks. Older ones use Uber's classic table template with no hooks, which is parsed from its fixed text order. Both give the same fields, and on a real account every receipt's charges add up to its total.
 - **Root sources, not scraping.** Orders come from `getPastOrdersV1` JSON: items with unit prices in cents, option add-ons, and fare lines keyed like `eats_fare.subtotal`, `eats.tax.base` and `eats_fare.tip`. Card charges come from the receipt document, parsed by its stable `data-testid` hooks (`payments_0_Card.String`, `payments_0_AmountCharged`, ...). No layout or CSS selectors are used.
 - **Checked against itself.** Every order reports `itemsMatchSubtotal`: whether (unit price + add-ons) × quantity reproduces Uber's subtotal. Where a receipt prints exact line amounts (restaurants), those win. Fare lines are summed into subtotal / tax / fees / tip / discounts that add up to the total.
 - **Latest browser, same identity.** The installed Chrome is driven directly, with its real version in the user agent. The cookies belong to that Chrome, and Uber's firewall rejects Playwright's bundled Chromium.
@@ -46,7 +47,7 @@ Claude ──stdio──> ubereats-order-history-mcp
 All tools are read-only. Nothing here can order, tip, rate, cancel or pay.
 
 ### `get_ubereats_orders`
-`start_date`, `end_date` (inclusive `YYYY-MM-DD`, order placed date, local time), `max_pages` (default 60), `include_items` (default true), `include_receipts` (default false; adds each order's card charges).
+`start_date`, `end_date` (inclusive `YYYY-MM-DD`, order placed date, local time), `store` (name contains, case- and symbol-insensitive, so `"mcdonalds"` matches `McDonald's®`), `max_pages` (default 60), `include_items` (default true), `include_receipts` (default false; adds each order's card charges).
 
 ```json
 {
@@ -64,7 +65,7 @@ All tools are read-only. Nothing here can order, tip, rate, cancel or pay.
 ```
 
 ### `get_ubereats_transactions`
-One row per card charge or refund, the shape of a card statement. `start_date` (required), `end_date`, `card_last4`, `lookback_days` (default 7: tips and refunds post after the order).
+One row per card charge or refund, the shape of a card statement. `start_date` (required), `end_date`, `card_last4`, `store`, `lookback_days` (default 7: tips and refunds post after the order).
 
 ```json
 [
@@ -128,7 +129,8 @@ Found a security issue? See [SECURITY.md](SECURITY.md).
 
 ## Limits
 
-- **History depth**: Uber Eats' website serves about two years of orders. Older orders need Uber's [data download](https://help.uber.com/riders/article/download-your-data).
+- **History depth**: Uber Eats' website serves about two years of orders, and a query that reaches further back returns a warning naming where the history starts. Older orders need Uber's [data download](https://help.uber.com/riders/article/download-your-data).
+- **Missing receipts**: occasionally Uber has no receipt for an order; it's reported in `receiptErrors`, never silently dropped.
 - **Your account only**: orders placed from someone else's Uber account (even on your card) aren't visible.
 - **Group orders** you didn't create show `isOrderCreator: false`.
 - macOS only (the Chrome cookie decryption uses the macOS Keychain).

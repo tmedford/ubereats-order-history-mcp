@@ -59,9 +59,9 @@ describe("parseReceiptHtml (real, scrubbed receipts)", () => {
     expect(r.items[0].options).toContain("Milk ($0.10)");
   });
 
-  test("a single charge printed without an amount takes the receipt total, flagged", () => {
+  test("an amount marked with Uber's data_testid typo is read as printed, not inferred", () => {
     const [p] = receipt("options").payments;
-    expect(p).toMatchObject({ amount: 26.75, amountInferred: true, last4: "1111" });
+    expect(p).toMatchObject({ amount: 26.75, amountInferred: false, last4: "1111" });
   });
 
   test("Uber Cash has no card digits", () => {

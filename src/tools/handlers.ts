@@ -8,7 +8,7 @@ import { mkdirSync, renameSync, rmSync, writeFileSync } from "fs";
 import { randomBytes } from "crypto";
 import { homedir } from "os";
 import { dirname, join, resolve } from "path";
-import type { UberEatsClient } from "../ubereats/client";
+import { historyWarning, type UberEatsClient } from "../ubereats/client";
 import { withReceiptLineTotals } from "../ubereats/orders";
 import { CsvKind, itemsCsv, ordersCsv, transactionsCsv } from "./csv";
 
@@ -29,6 +29,11 @@ export const TOOLS = [
         start_date: { type: "string", description: "Inclusive YYYY-MM-DD (order placed date, local time)." },
         end_date: { type: "string", description: "Inclusive YYYY-MM-DD." },
         max_pages: { type: "number", description: "Safety cap, 10 orders per page. Default 60." },
+        store: {
+          type: "string",
+          description:
+            'Only orders from stores whose name contains this, e.g. "home depot" or "mcdonalds" (case and symbols ignored).',
+        },
         include_items: { type: "boolean", description: "Include line items (default true)." },
         include_receipts: {
           type: "boolean",
@@ -63,6 +68,12 @@ export const TOOLS = [
         start_date: { type: "string", description: "Inclusive YYYY-MM-DD (charge date)." },
         end_date: { type: "string", description: "Inclusive YYYY-MM-DD." },
         card_last4: { type: "string", description: "Only charges on this card (last 4 digits)." },
+        store: {
+          type: "string",
+          description:
+            'Only orders from stores whose name contains this, e.g. "home depot" or "mcdonalds" (case and symbols ignored).',
+        },
+
         lookback_days: {
           type: "number",
           description: "Also scan orders placed this many days before start_date (late tips/refunds). Default 7.",
@@ -84,6 +95,12 @@ export const TOOLS = [
         start_date: { type: "string", description: "Inclusive YYYY-MM-DD." },
         end_date: { type: "string", description: "Inclusive YYYY-MM-DD." },
         output_path: { type: "string", description: "File to write. Default ~/Downloads/ubereats-<kind>-<dates>.csv" },
+        store: {
+          type: "string",
+          description:
+            'Only orders from stores whose name contains this, e.g. "home depot" or "mcdonalds" (case and symbols ignored).',
+        },
+
         max_pages: { type: "number", description: "Default 60." },
       },
       required: ["kind"],
@@ -93,6 +110,23 @@ export const TOOLS = [
 ] as const;
 
 export class InputError extends Error {}
+
+function optStore(args: Record<string, unknown>): string | undefined {
+  const v = args.store;
+  if (v === undefined || v === null || v === "") return undefined;
+  if (typeof v !== "string" || v.length > 80)
+    throw new InputError("store must be a store name (at most 80 characters)");
+  return v;
+}
+
+/** Every warning that applies to a walk, joined - never just the first. */
+function warnings(res: { truncated: boolean; reachedEnd: boolean; oldestSeen: string | null }, startDate?: string) {
+  const w = [
+    res.truncated ? "Stopped at max_pages before reaching start_date; raise max_pages for older orders." : null,
+    historyWarning(res, startDate),
+  ].filter(Boolean);
+  return w.length ? { warning: w.join(" ") } : {};
+}
 
 /**
  * Write `data` so it is never readable by anyone else, even for an instant: it goes to a
@@ -168,7 +202,8 @@ export async function handleTool(
       const endDate = optDate(args, "end_date");
       checkRange(startDate, endDate);
       const maxPages = optInt(args, "max_pages", 60, 1, 500);
-      const res = await client.listOrders({ startDate, endDate, maxPages });
+      const store = optStore(args);
+      const res = await client.listOrders({ startDate, endDate, maxPages, store });
       const includeItems = optBool(args, "include_items", true);
       let list = res.orders;
       const receipts = optBool(args, "include_receipts", false)
@@ -187,13 +222,11 @@ export async function handleTool(
       }));
       return {
         status: "success",
-        params: { startDate, endDate, maxPages, timeZone: client.timeZone },
+        params: { startDate, endDate, maxPages, store: store ?? null, timeZone: client.timeZone },
         orderCount: orders.length,
         pages: res.pages,
         oldestOrderSeen: res.oldestSeen,
-        ...(res.truncated
-          ? { warning: "Stopped at max_pages before reaching start_date; raise max_pages for older orders." }
-          : {}),
+        ...warnings(res, startDate),
         orders,
       };
     }
@@ -216,23 +249,25 @@ export async function handleTool(
       if (last4 !== undefined && (typeof last4 !== "string" || !/^\d{4}$/.test(last4))) {
         throw new InputError("card_last4 must be 4 digits");
       }
+      const store = optStore(args);
       const res = await client.listTransactions({
         startDate,
         endDate,
+        store,
         maxPages: optInt(args, "max_pages", 60, 1, 500),
         lookbackDays: optInt(args, "lookback_days", 7, 0, 60),
       });
       const txns = last4 ? res.transactions.filter((t) => t.last4 === last4) : res.transactions;
       return {
         status: "success",
-        params: { startDate, endDate, cardLast4: last4 ?? null, timeZone: client.timeZone },
+        params: { startDate, endDate, cardLast4: last4 ?? null, store: store ?? null, timeZone: client.timeZone },
         transactionCount: txns.length,
         total: Math.round(txns.reduce((s, t) => s + (t.amount ?? 0), 0) * 100) / 100,
         ...(txns.some((t) => t.amount === null)
           ? { note: "Some receipts printed no amount for a charge (amount: null)." }
           : {}),
         ordersScanned: res.ordersScanned,
-        ...(res.truncated ? { warning: "Stopped at max_pages before reaching start_date; raise max_pages." } : {}),
+        ...warnings(res, startDate),
         ...(res.receiptErrors.length ? { receiptErrors: res.receiptErrors } : {}),
         transactions: txns,
       };
@@ -247,14 +282,15 @@ export async function handleTool(
       checkRange(startDate, endDate);
       if (kind === "transactions" && !startDate) throw new InputError("start_date is required for transactions");
       const maxPages = optInt(args, "max_pages", 60, 1, 500);
+      const store = optStore(args);
       let csv: string;
       let rows: number;
       if (kind === "transactions") {
-        const res = await client.listTransactions({ startDate, endDate, maxPages });
+        const res = await client.listTransactions({ startDate, endDate, maxPages, store });
         csv = transactionsCsv(res.transactions);
         rows = res.transactions.length;
       } else {
-        const res = await client.listOrders({ startDate, endDate, maxPages });
+        const res = await client.listOrders({ startDate, endDate, maxPages, store });
         csv = kind === "orders" ? ordersCsv(res.orders) : itemsCsv(res.orders);
         rows = kind === "orders" ? res.orders.length : res.orders.reduce((s, o) => s + o.items.length, 0);
       }

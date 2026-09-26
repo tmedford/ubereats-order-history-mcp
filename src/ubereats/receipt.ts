@@ -20,7 +20,7 @@
  * payment row, which is exactly what a bank or card statement shows.
  */
 
-import { parse } from "node-html-parser";
+import { HTMLElement, parse } from "node-html-parser";
 import { round2 } from "./orders";
 
 export interface ReceiptPayment {
@@ -51,6 +51,8 @@ export interface ReceiptFareLine {
 
 export interface EatsReceipt {
   orderId: string;
+  /** "current" = data-testid template (from ~Sep 2025); "legacy" = the older table template. */
+  layout: "current" | "legacy";
   headline: string | null;
   storeName: string | null;
   headerDate: string | null;
@@ -86,21 +88,194 @@ export function parseChargeTime(text: string | null | undefined): string | null 
   return `${year}-${pad(mo)}-${pad(d)}T${pad(hour)}:${min}`;
 }
 
-/** "American Express ••••1234" -> { brand: "American Express", last4: "1234" }. */
+/**
+ * "American Express ••••1234" -> { brand: "American Express", last4: "1234" }.
+ * Also "Visa ••••1234 (Joined Card)" (a card shared from another Uber account) and
+ * user-nicknamed cards ("House ••••1234") - the brand is whatever label Uber prints.
+ */
 export function parseCard(method: string): { brand: string | null; last4: string | null } {
-  const m = method.match(/^(.*?)[\s]*(?:[•*·●]+|x{2,}|ending in)\s*(\d{4})\s*$/i);
+  const m = method.match(/^(.*?)\s*(?:[•*·●]+|x{2,}|ending in)\s*(\d{4})\s*(?:\(([^)]*)\))?\s*$/i);
   if (!m) return { brand: method.trim() || null, last4: null };
-  return { brand: m[1].trim() || null, last4: m[2] };
+  return { brand: m[1].trim() || m[3]?.trim() || null, last4: m[2] };
+}
+
+/**
+ * Fill ONE missing charge amount from the receipt total: the single-payment case takes the
+ * total; with several payments the missing one is total minus the others. Flagged, never
+ * silent. With two or more missing amounts nothing can be inferred.
+ */
+export function inferMissingAmount(payments: ReceiptPayment[], total: number | null): void {
+  const missing = payments.filter((p) => p.amount === null);
+  if (missing.length !== 1 || total === null) return;
+  const known = payments.reduce((s, p) => s + (p.amount ?? 0), 0);
+  missing[0].amount = round2(total - known);
+  missing[0].amountInferred = true;
+  if (missing[0].amount < 0) missing[0].kind = "refund";
+}
+
+function newPayment(
+  index: number,
+  method: string,
+  amount: number | null,
+  chargedAtText: string | null,
+  info: string | null,
+): ReceiptPayment {
+  return {
+    index,
+    method,
+    ...parseCard(method),
+    amount,
+    amountInferred: false,
+    chargedAtText,
+    chargedAt: parseChargeTime(chargedAtText),
+    info,
+    kind: (amount ?? 0) < 0 || /refund/i.test(info ?? "") ? "refund" : "charge",
+  };
+}
+
+/** Text of every innermost cell/block, in document order - the legacy template's content. */
+export function textCells(root: HTMLElement): string[] {
+  const cells: string[] = [];
+  const walk = (node: HTMLElement) => {
+    for (const child of node.childNodes) {
+      if (!(child instanceof HTMLElement)) continue;
+      const tag = child.rawTagName?.toLowerCase();
+      if (tag === "style" || tag === "script" || tag === "head") continue;
+      const leaf = ["td", "div", "span", "p"].includes(tag) && child.querySelectorAll("td,div,span,p").length === 0;
+      if (leaf) {
+        const t = child.textContent
+          .replace(/\u00a0/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+        if (t) cells.push(t);
+      } else {
+        walk(child);
+      }
+    }
+  };
+  walk(root);
+  return cells;
+}
+
+const MONEY = /^(-|−)?\$[\d,]+(\.\d+)?$/;
+const CHARGE_TIME = /^\d{1,2}\/\d{1,2}\/\d{2,4}\s+\d{1,2}:\d{2}\s*[AP]M$/i;
+
+/**
+ * The older receipt template (roughly before September 2025) has no data-testid hooks: it
+ * is Uber's classic table email. Its text cells come in a fixed order, verified on real
+ * receipts:
+ *   <total> | <Month D, YYYY> | Thanks for ..., <name> | Here's your receipt for <store>. |
+ *   Total | <total> | [savings line] |
+ *   ( <qty> | <title> | [options...] | <line $> | <$ /pc> )* |
+ *   Subtotal | <$> | ( <label> | <$> )* |
+ *   Payments | ( <method> | <M/D/YY h:mm AM> | [info] | <$> )*
+ */
+export function parseLegacyReceipt(root: HTMLElement, orderId: string): EatsReceipt {
+  const cells = textCells(root);
+  const at = (label: string, from = 0) => cells.findIndex((c, i) => i >= from && c === label);
+  const iTotal = at("Total");
+  // The fare section opens with "Subtotal" on a normal receipt and "Meal Fare" on an UPDATED
+  // one (after a refund or a tip); whichever comes first after the total.
+  const iSubtotal = (() => {
+    const hits = ["Subtotal", "Item Subtotal", "Meal Fare"]
+      .map((l) => at(l, Math.max(0, iTotal)))
+      .filter((i) => i >= 0);
+    return hits.length ? Math.min(...hits) : -1;
+  })();
+  const iPayments = at("Payments", Math.max(0, iSubtotal));
+  const sub = cells.find((c) => /receipt for /i.test(c)) ?? null;
+
+  const items: EatsReceipt["items"] = [];
+  const notes: string[] = []; // "The tip has been processed", "You saved $3.54 ..."
+  if (iTotal >= 0 && iSubtotal > iTotal) {
+    let cur: EatsReceipt["items"][number] | null = null;
+    for (let i = iTotal + 2; i < iSubtotal; i++) {
+      const c = cells[i];
+      if (/^\d+$/.test(c) && i + 1 < iSubtotal && !MONEY.test(cells[i + 1])) {
+        cur = { id: `legacy-${items.length}`, title: cells[i + 1], quantity: Number(c), amount: null, options: [] };
+        items.push(cur);
+        i++;
+      } else if (!cur) {
+        if (!MONEY.test(c)) notes.push(c); // banners before the first item
+      } else if (/\/pc$/.test(c)) {
+        continue;
+      } else if (MONEY.test(c) && cur.amount === null) {
+        cur.amount = parseMoney(c);
+      } else if (!MONEY.test(c)) {
+        cur.options.push(c);
+      }
+    }
+  }
+
+  const fareLines: ReceiptFareLine[] = [];
+  if (iSubtotal >= 0) {
+    const end = iPayments > iSubtotal ? iPayments : cells.length;
+    for (let i = iSubtotal; i + 1 < end; i++) {
+      if (MONEY.test(cells[i]) || !MONEY.test(cells[i + 1])) continue;
+      const label = cells[i];
+      const key =
+        label === "Subtotal"
+          ? "item_subtotal"
+          : label
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "_")
+              .replace(/^_|_$/g, "");
+      fareLines.push({ key, label, amount: parseMoney(cells[i + 1]) as number });
+      i++;
+    }
+  }
+
+  // Each charge is anchored on its timestamp cell: <method> | <time> | <amount> | [info].
+  // "Refund" comes AFTER the amount in this template.
+  const payments: ReceiptPayment[] = [];
+  if (iPayments >= 0) {
+    const times: number[] = [];
+    for (let i = iPayments + 1; i < cells.length; i++) if (CHARGE_TIME.test(cells[i])) times.push(i);
+    times.forEach((t, n) => {
+      const stop = n + 1 < times.length ? times[n + 1] - 1 : cells.length;
+      let amount: number | null = null;
+      const info: string[] = [];
+      for (let i = t + 1; i < stop; i++) {
+        const c = cells[i];
+        if (MONEY.test(c) && amount === null) amount = parseMoney(c);
+        else if (!MONEY.test(c) && c.length <= 40 && !/^visit |invoice/i.test(c)) info.push(c);
+      }
+      payments.push(newPayment(payments.length, cells[t - 1], amount, cells[t], info.join(" ") || null));
+    });
+  }
+  const total = iTotal >= 0 ? parseMoney(cells[iTotal + 1]) : null;
+  inferMissingAmount(payments, total);
+
+  const headerDate = cells.find((c) => /^[A-Z][a-z]+ \d{1,2}, \d{4}$/.test(c)) ?? null;
+  return {
+    orderId,
+    layout: "legacy",
+    headline: cells.find((c) => /^Thanks for /i.test(c)) ?? null,
+    storeName: sub?.match(/receipt for (.+?)\.?$/i)?.[1]?.trim() ?? null,
+    headerDate,
+    headerTime: null,
+    total,
+    fareLines,
+    items,
+    payments,
+    pickup: null,
+    dropoff: null,
+    courier: null,
+    notifications: notes,
+  };
 }
 
 export function parseReceiptHtml(html: string, orderId: string): EatsReceipt {
   const root = parse(html);
+  if (!root.querySelector("[data-testid], [data_testid]")) return parseLegacyReceipt(root, orderId);
   // testid -> text; some ids carry trailing whitespace/newlines in the source
   const byId = new Map<string, string>();
   const repeated = new Map<string, string[]>(); // ids that legitimately repeat (item options)
   const order: string[] = [];
-  for (const el of root.querySelectorAll("[data-testid]")) {
-    const id = (el.getAttribute("data-testid") ?? "").trim();
+  // Uber's own markup sometimes spells the hook data_testid (seen on payments_N_AmountCharged
+  // in split-payment receipts), so both spellings are read.
+  for (const el of root.querySelectorAll("[data-testid], [data_testid]")) {
+    const id = (el.getAttribute("data-testid") ?? el.getAttribute("data_testid") ?? "").trim();
     if (!id) continue;
     const text = el.textContent.replace(/\s+/g, " ").trim();
     if (!repeated.has(id)) repeated.set(id, []);
@@ -142,24 +317,10 @@ export function parseReceiptHtml(html: string, orderId: string): EatsReceipt {
     const method = get(`payments_${i}_Card.String`) ?? "";
     const amount = parseMoney(get(`payments_${i}_AmountCharged`));
     const info = get(`payments_${i}_Info`);
-    const chargedAtText = get(`payments_${i}_date_time`);
-    payments.push({
-      index: i,
-      method,
-      ...parseCard(method),
-      amount,
-      amountInferred: false,
-      chargedAtText,
-      chargedAt: parseChargeTime(chargedAtText),
-      info,
-      kind: (amount ?? 0) < 0 || /refund/i.test(info ?? "") ? "refund" : "charge",
-    });
+    payments.push(newPayment(i, method, amount, get(`payments_${i}_date_time`), info));
   }
   const total = parseMoney(get("total_fare_amount"));
-  if (payments.length === 1 && payments[0].amount === null && total !== null) {
-    payments[0].amount = total;
-    payments[0].amountInferred = true;
-  }
+  inferMissingAmount(payments, total);
 
   const point = (n: number) => {
     const time = get(`address_point_${n}_time`);
@@ -177,6 +338,7 @@ export function parseReceiptHtml(html: string, orderId: string): EatsReceipt {
 
   return {
     orderId,
+    layout: "current",
     headline: get("header_message"),
     storeName,
     headerDate: get("header_date"),

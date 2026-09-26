@@ -21,7 +21,7 @@ import { UberEatsClient } from "./ubereats/client";
 import { PageTransport, UberEatsError, UberEatsRpc } from "./ubereats/rpc";
 import { handleTool, InputError, TOOLS } from "./tools/handlers";
 
-const VERSION = "0.1.0";
+const VERSION = "0.2.0";
 
 /** Cookie domains that carry the Uber Eats session (auth is shared with uber.com). */
 export const SESSION_DOMAINS = ["ubereats.com", "uber.com"];

@@ -217,15 +217,42 @@ export function itemsMatch(items: EatsOrderItem[], subtotal: number | null): boo
  * edge cases the order feed does not disambiguate (an included patty listed with its
  * extra-unit price and defaultQuantity 0).
  */
+/** Compare item titles as printed on the order feed vs the receipt (marks, case, spacing). */
+export function normalizeTitle(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[®™©'’`]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
 export function withReceiptLineTotals(
   order: EatsOrder,
-  receiptItems: { id: string; amount: number | null }[],
+  receiptItems: { id: string; title?: string; quantity?: number | null; amount: number | null }[],
 ): EatsOrder {
-  const byId = new Map(receiptItems.filter((r) => r.amount !== null).map((r) => [r.id, r.amount as number]));
-  if (byId.size === 0) return order;
-  const items = order.items.map((i) =>
-    byId.has(i.id) ? { ...i, lineTotal: byId.get(i.id) as number, lineTotalSource: "receipt" as const } : i,
-  );
+  const printed = receiptItems.filter((r) => r.amount !== null);
+  if (printed.length === 0) return order;
+  // Current receipts key items by the cart-item id; the legacy template has no ids, so its
+  // lines join by title (and quantity when printed), each receipt line used at most once.
+  const byId = new Map(printed.map((r) => [r.id, r]));
+  const used = new Set<(typeof printed)[number]>();
+  const items = order.items.map((i) => {
+    let hit = byId.get(i.id);
+    if (!hit) {
+      const t = normalizeTitle(i.title);
+      hit = printed.find(
+        (r) =>
+          !used.has(r) &&
+          r.title !== undefined &&
+          normalizeTitle(r.title) === t &&
+          (r.quantity == null || r.quantity === i.quantity),
+      );
+    }
+    if (!hit || used.has(hit)) return i;
+    used.add(hit);
+    return { ...i, lineTotal: hit.amount as number, lineTotalSource: "receipt" as const };
+  });
   return { ...order, items, itemsMatchSubtotal: itemsMatch(items, order.fare.subtotal) };
 }
 

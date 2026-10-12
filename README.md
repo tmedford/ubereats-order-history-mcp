@@ -113,6 +113,36 @@ No browser download is needed: `playwright-core` drives your installed Chrome.
 | `UBEREATS_ORDERS_BROWSER_DATA_DIR` | `~/.ubereats-order-history-mcp/browser-data` | The connector's own browser profile (never Chrome's) |
 | `UBEREATS_ORDERS_HEADFUL` | | `1` shows the browser window (debugging) |
 
+## Deployment
+
+There is no hosted deployment. The server is a local **stdio** process on your own Mac: your MCP client starts `node dist/index.js` when a session opens and stops it when the session ends. It has to run where your Chrome is, because it signs in from Chrome's Uber Eats cookies.
+
+| What | Where |
+|---|---|
+| Code | the checkout you built (`dist/` is what runs; it is not committed) |
+| Registration | your MCP client's config: `claude mcp add` writes the absolute path to `dist/index.js` (Claude Code keeps it in `~/.claude.json`) |
+| State | `~/.ubereats-order-history-mcp/browser-data`, the connector's own browser profile. Nothing else is written outside files you ask it to export |
+| Network | `https://*.ubereats.com` only, from your machine |
+
+**Update** to a newer version, then restart the client so it starts the new build:
+
+```bash
+git pull && npm install && npm run build
+```
+
+**Move the checkout** and the registered path goes stale, because it is absolute. Re-register from the new location:
+
+```bash
+claude mcp remove ubereats-orders
+claude mcp add ubereats-orders -- node "$PWD/dist/index.js"
+```
+
+**Check it** after either: call `check_ubereats_auth_status`. `authenticated: true` means the server started, found Chrome's session and reached Uber Eats.
+
+**Remove it**: `claude mcp remove ubereats-orders`, then delete `~/.ubereats-order-history-mcp` and the checkout.
+
+**Releases**: there is no package or publish step. Changes reach `main` through pull requests; CI runs the leak check and the unit tests on Linux and macOS (Node 20 and 22). The version in `package.json` and `CHANGELOG.md` is what a checkout reports.
+
 ## Privacy and security
 
 Enforced in code, and each point is covered by tests:

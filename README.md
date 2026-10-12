@@ -137,7 +137,7 @@ claude mcp remove ubereats-orders
 claude mcp add ubereats-orders -- node "$PWD/dist/index.js"
 ```
 
-**Check it** after either: call `check_ubereats_auth_status`. `signedIn: true` means the server started, found Chrome's session and reached Uber Eats.
+**Check it** after either: call `check_ubereats_auth_status`. `authenticated: true` means the server started, found Chrome's session and reached Uber Eats.
 
 **Remove it**: `claude mcp remove ubereats-orders`, then delete `~/.ubereats-order-history-mcp` and the checkout.
 
